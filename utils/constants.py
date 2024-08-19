@@ -17,3 +17,13 @@ class Env:
     BACKTEST_PASSWORD = "BACKTEST_PASSWORD"
     BACKTEST_TWO_FA = "BACKTEST_TWO_FA"
     BACKTEST_USER_ID = "BACKTEST_USER_ID"
+
+
+class SheetIndex:
+    ENVIRON = 0
+    USER = 1
+
+
+class Broker:
+    ZERODHA = "Zerodha"
+    ANGEL_ONE = "AngelOne"
