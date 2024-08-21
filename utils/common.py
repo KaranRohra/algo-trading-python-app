@@ -27,3 +27,15 @@ def get_int_time_frame_from_str(time_frame: str):
         "30minute": 30,
         "60minute": 60,
     }[time_frame]
+
+
+def get_candle_limit(time_frame: str) -> str:
+    return {
+        "minute": 7,
+        "3minute": 20,
+        "5minute": 40,
+        "10minute": 65,
+        "15minute": 90,
+        "30minute": 90,
+        "60minute": 90,
+    }[time_frame]

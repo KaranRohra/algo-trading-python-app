@@ -28,9 +28,9 @@ def add_indicator_values(ohlc: List):
 
     for i in range(len(ohlc)):
         obj = ohlc[i]
-        obj["ema20"] = ema20[i]
-        obj["ema50"] = ema50[i]
-        obj["ema200"] = ema200[i]
+        obj["ema20"] = round(ema20[i], 2)
+        obj["ema50"] = round(ema50[i], 2)
+        obj["ema200"] = round(ema200[i], 2)
 
-        obj["adx"] = adx[i]
-        obj["rsi"] = rsi[i]
+        obj["adx"] = round(adx[i], 2)
+        obj["rsi"] = round(rsi[i], 2)

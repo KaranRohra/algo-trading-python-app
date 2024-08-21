@@ -4,3 +4,7 @@
 
 # Cache Folder
 __pycache__/
+
+
+# Temporary Files
+temp.*

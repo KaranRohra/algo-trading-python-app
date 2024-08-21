@@ -12,15 +12,11 @@ class Environ:
         start_time,
         end_time,
         force_stop,
-        entry_time_frame,
-        exit_time_frame,
         send_email,
     ):
         self.start_time = time_str_to_curr_datetime(start_time)
         self.end_time = time_str_to_curr_datetime(end_time)
         self.force_stop = force_stop == "1"
-        self.entry_time_frame = int(entry_time_frame)
-        self.exit_time_frame = int(exit_time_frame)
         self.send_email = send_email == "1"
 
     def set_environ(self):

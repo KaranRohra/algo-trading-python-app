@@ -920,6 +920,12 @@ class KiteConnect(object):
         """Fetch list of baskets"""
         return self._get("baskets", required_api_key=False)
 
+    def basket(self, name):
+        """Fetch basket by basket name"""
+        all_baskets = self.baskets()
+        basket = [b for b in all_baskets if b["name"] == name]
+        return basket[0]["items"] if basket else []
+
     def market_watch_list(self):
         """Fetch market watch list"""
         return self._get("marketwatches.all", required_api_key=False)
