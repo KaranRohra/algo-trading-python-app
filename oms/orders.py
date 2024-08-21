@@ -49,6 +49,9 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
 
 
 def entry_order(user: User, symbol: dict):
+    log.info(
+        f"Searching entry for: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
+    )
     now = dt.now().replace(second=0)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
@@ -64,6 +67,9 @@ def entry_order(user: User, symbol: dict):
 
 
 def exit_order(user: User, symbol: dict):
+    log.info(
+        f"Searching exit for: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
+    )
     broker = user.broker
     holding = [
         h for h in user.holdings if h["instrument_token"] == symbol["instrument_token"]
