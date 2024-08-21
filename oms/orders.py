@@ -35,10 +35,10 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
     broker.place_order(
         tradingsymbol=symbol["tradingsymbol"],
         exchange=symbol["exchange"],
-        product=symbol["product"],
+        product=symbol["params"]["product"],
         variety=broker.VARIETY_REGULAR,
         transaction_type=transaction_type,
-        quantity=abs(symbol["quantity"]),
+        quantity=abs(symbol["params"]["quantity"]),
         order_type=broker.ORDER_TYPE_MARKET,
         validity=broker.VALIDITY_DAY,
     )
