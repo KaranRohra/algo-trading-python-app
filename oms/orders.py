@@ -20,10 +20,12 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             to_date=now,
             interval=user.entry_time_frame,
         )
-        if transaction_type == const.BUY and curr_ohlc[-1]["close"] > ohlc[-1]["high"]:
+        if transaction_type == const.BUY and curr_ohlc[-1]["high"] > ohlc[-1]["high"]:
             entry_price = curr_ohlc[-1]["close"]
-        if transaction_type == const.SELL and curr_ohlc[-1]["close"] < ohlc[-1]["low"]:
+            break
+        if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
             entry_price = curr_ohlc[-1]["close"]
+            break
         time.sleep(1)
 
     if not entry_price:
@@ -49,9 +51,6 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
 
 
 def entry_order(user: User, symbol: dict):
-    log.info(
-        f"Searching entry for: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
-    )
     now = dt.now().replace(second=0)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
@@ -60,6 +59,10 @@ def entry_order(user: User, symbol: dict):
         interval=user.entry_time_frame,
     )
     result = entry.ema_adx_rsi_entry_v3(ohlc)
+    log.info(
+        f"Entry Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
+        result,
+    )
     if result["signal"] == const.BUY:
         place_entry_order(user, symbol, ohlc, user.broker.TRANSACTION_TYPE_BUY)
     elif result["signal"] == const.SELL:
@@ -67,9 +70,6 @@ def entry_order(user: User, symbol: dict):
 
 
 def exit_order(user: User, symbol: dict):
-    log.info(
-        f"Searching exit for: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
-    )
     broker = user.broker
     holding = [
         h for h in user.holdings if h["instrument_token"] == symbol["instrument_token"]
@@ -83,6 +83,10 @@ def exit_order(user: User, symbol: dict):
     )
 
     result = exit.ema_exit_v1(ohlc)
+    log.info(
+        f"Exit Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
+        result,
+    )
     if result["signal"] == const.BUY and holding["quantity"] > 0:
         return
     elif result["signal"] == const.SELL and holding["quantity"] < 0:

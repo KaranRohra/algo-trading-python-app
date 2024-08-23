@@ -34,6 +34,7 @@ def is_trading_time() -> bool:
 
 
 def start():
+    log.clean_logs_older_than_30()
     while True:
         try:
             GOOGLE_SHEET_ENVIRON.set_environ()

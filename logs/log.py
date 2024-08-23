@@ -22,3 +22,7 @@ def info(msg, details=None):
 
 def warn(msg, details=None):
     db_conn.insert_log("WARN", msg, details)
+
+
+def clean_logs_older_than_30():
+    db_conn.clean_logs()
