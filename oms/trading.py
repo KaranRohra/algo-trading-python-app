@@ -46,3 +46,5 @@ def start():
             break
         except Exception as e:
             log.error(e)
+    
+    log.warn("Trading Stopped.")
