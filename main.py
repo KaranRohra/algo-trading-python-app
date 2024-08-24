@@ -7,7 +7,7 @@ from utils.constants import Env
 
 def main():
     os.environ["TZ"] = "Asia/Kolkata"
-    if os.environ[Env.MACHINE_OS] in ("ubuntu",):
+    if os.environ[Env.MACHINE_OS] in ("linux",):
         time.tzset()
     trading.start()
 
