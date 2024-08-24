@@ -14,7 +14,7 @@ from oms import user_scan
 
 def scan_users(users: List[User]):
     now = dt.now()
-    if now.minute % 3 == 0:
+    if now.minute % 13 == 0:
         gusers.get_or_update_users(users)
         GOOGLE_SHEET_ENVIRON.set_environ()
 

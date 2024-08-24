@@ -26,13 +26,28 @@ def insert_log(log_type, message, details=None):
 
 
 def clean_logs():
-    # Calculate the date 30 days ago from today
-    thirty_days_ago = dt.now() - td(days=30)
+    threshold_date = dt.utcnow() - td(days=30)
+    ids_to_delete = []
 
-    # Delete documents older than 30 days
-    result = logs.delete_many({"timestamp": {"$lt": thirty_days_ago}})
+    documents_to_delete = logs.find()
 
-    log.success(
-        "MongoDB",
-        f"Deleted {result.deleted_count} documents older than 30 days.",
-    )
+    for doc in documents_to_delete:
+        try:
+            if "timestamp" in doc and doc["timestamp"]:
+                timestamp_str = doc["timestamp"].split(".")[0]
+                doc_timestamp = dt.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+
+                if doc_timestamp < threshold_date:
+                    ids_to_delete.append(doc["_id"])
+            else:
+                ids_to_delete.append(doc["_id"])
+        except ValueError:
+            print(f"Invalid timestamp format in document with _id: {doc['_id']}")
+
+    if ids_to_delete:
+        delete_result = logs.delete_many({"_id": {"$in": ids_to_delete}})
+        log.info(
+            f"Deleted {delete_result.deleted_count} documents older than {threshold_date} or without a timestamp."
+        )
+    else:
+        log.info("No documents older than 30 days to delete.")
