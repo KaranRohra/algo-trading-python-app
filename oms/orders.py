@@ -58,7 +58,7 @@ def entry_order(user: User, symbol: dict):
         to_date=now,
         interval=user.entry_time_frame,
     )
-    result = entry.ema_adx_rsi_entry_v3(ohlc)
+    result = entry.ema_adx_rsi_entry_v2(ohlc)
     log.info(
         f"Entry Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
         result,
@@ -82,7 +82,7 @@ def exit_order(user: User, symbol: dict):
         interval=user.exit_time_frame,
     )
 
-    result = exit.ema_exit_v1(ohlc)
+    result = exit.ema_exit_v2(ohlc)
     log.info(
         f"Exit Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
         result,

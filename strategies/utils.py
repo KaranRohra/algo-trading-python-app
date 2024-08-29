@@ -20,6 +20,7 @@ def add_indicator_values(ohlc: List):
 
     ema20 = trend.ema_indicator(close_series, window=20, fillna=True).to_list()
     ema50 = trend.ema_indicator(close_series, window=50, fillna=True).to_list()
+    ema100 = trend.ema_indicator(close_series, window=100, fillna=True).to_list()
     ema200 = trend.ema_indicator(close_series, window=200, fillna=True).to_list()
 
     adx = trend.adx(high_series, low_series, close_series, fillna=True).to_list()
@@ -30,6 +31,7 @@ def add_indicator_values(ohlc: List):
         obj = ohlc[i]
         obj["ema20"] = round(ema20[i], 2)
         obj["ema50"] = round(ema50[i], 2)
+        obj["ema100"] = round(ema100[i], 2)
         obj["ema200"] = round(ema200[i], 2)
 
         obj["adx"] = round(adx[i], 2)
