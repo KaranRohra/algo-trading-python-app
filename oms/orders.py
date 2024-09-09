@@ -21,10 +21,10 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             interval=user.entry_time_frame,
         )
         if transaction_type == const.BUY and curr_ohlc[-1]["high"] > ohlc[-1]["high"]:
-            entry_price = curr_ohlc[-1]["close"]
+            entry_price = ohlc[-1]["high"] + 2
             break
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
-            entry_price = curr_ohlc[-1]["close"]
+            entry_price = ohlc[-1]["low"] - 2
             break
         time.sleep(1)
 
@@ -34,19 +34,23 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             {"status": "Candle High/Low not break", **user.to_dict()},
         )
         return
-    broker.place_order(
+    order_id = broker.place_order(
         tradingsymbol=symbol["tradingsymbol"],
         exchange=symbol["exchange"],
         product=symbol["params"]["product"],
         variety=broker.VARIETY_REGULAR,
         transaction_type=transaction_type,
         quantity=abs(symbol["params"]["quantity"]),
-        order_type=broker.ORDER_TYPE_MARKET,
+        order_type=broker.ORDER_TYPE_LIMIT,
+        price=entry_price,
         validity=broker.VALIDITY_DAY,
     )
+    order_details = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][
+        0
+    ]
     log.success(
         f"Order placed successfully- [{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}]",
-        {**user.to_dict()},
+        {**user.to_dict(), **order_details},
     )
 
 
@@ -106,6 +110,8 @@ def exit_order(user: User, symbol: dict):
     order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
     if order["status"] == broker.STATUS_COMPLETE:
-        log.success(f"Position exited successfully - {msg}")
+        log.success(
+            f"Position exited successfully - {msg}", {**user.to_dict(), **order}
+        )
     else:
         log.warn(f"Order failed to execute - {msg}")
