@@ -21,10 +21,10 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             interval=user.entry_time_frame,
         )
         if transaction_type == const.BUY and curr_ohlc[-1]["high"] > ohlc[-1]["high"]:
-            entry_price = ohlc[-1]["high"] + 2
+            entry_price = ohlc[-1]["high"]
             break
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
-            entry_price = ohlc[-1]["low"] - 2
+            entry_price = ohlc[-1]["low"]
             break
         time.sleep(1)
 
@@ -57,7 +57,7 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
 
 
 def entry_order(user: User, symbol: dict):
-    now = dt.now().replace(second=0)
+    now = (dt.now() - td(minutes=1)).replace(second=59)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
         from_date=now - td(days=get_candle_limit(user.entry_time_frame)),
@@ -80,7 +80,7 @@ def exit_order(user: User, symbol: dict):
     holding = [
         h for h in user.holdings if h["instrument_token"] == symbol["instrument_token"]
     ][0]
-    now = dt.now().replace(second=0)
+    now = (dt.now() - td(minutes=1)).replace(second=59)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
         from_date=now - td(days=get_candle_limit(user.exit_time_frame)),
