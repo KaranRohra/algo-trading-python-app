@@ -8,3 +8,6 @@ __pycache__/
 
 # Temporary Files
 temp.*
+
+# Local Log Files
+app.log

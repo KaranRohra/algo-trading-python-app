@@ -26,4 +26,4 @@ class SheetIndex:
 
 class Broker:
     ZERODHA = "Zerodha"
-    ANGEL_ONE = "AngelOne"
+    ANGELONE = "AngelOne"

@@ -5,7 +5,7 @@ from typing import List
 import pyotp
 from gspread.exceptions import GSpreadException
 
-from brokers import kite_connect
+from brokers import kite_connect, angelone_smart_api
 from gsheets import connection
 from logs import log
 from utils.common import time_str_to_curr_datetime, title_to_snake
@@ -29,6 +29,7 @@ class User:
         exit_time_frame,
         in_process_symbols=set(),
         holdings=[],
+        api_key=None,
     ):
         self.user_name: str = user_name
         self.user_id: str = user_id
@@ -44,17 +45,19 @@ class User:
         self.entry_time_frame: str = entry_time_frame
         self.exit_time_frame: str = exit_time_frame
         self.holdings: List[dict] = holdings
+        self.api_key: str = api_key
 
     def set_broker_obj(self):
         retry = 0
         while retry < 3:  # Max retry connection 3 times
             try:
-                self.broker: kite_connect.KiteConnect = get_broker_obj(
-                    self.broker_name
-                )(
+                self.broker: (
+                    kite_connect.KiteConnect | angelone_smart_api.AngelOneSmartConnect
+                ) = get_broker_obj(self.broker_name)(
                     user_id=self.user_id,
                     password=self._password,
                     totp_value=pyotp.TOTP(self._two_fa).now(),
+                    api_key=self.api_key,
                 )
                 log.success(f"{self.user_id}: Connection with Broker Established")
                 break
@@ -123,4 +126,5 @@ def get_or_update_users(old_users: List[User] | None = None) -> List[User]:
 def get_broker_obj(broker_name):
     return {
         Broker.ZERODHA: kite_connect.KiteConnect,
+        Broker.ANGELONE: angelone_smart_api.AngelOneSmartConnect,
     }[broker_name]
