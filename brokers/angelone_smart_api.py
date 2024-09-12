@@ -73,6 +73,7 @@ class AngelOneSmartConnect(SmartConnect):
         holding_lst = self.holding()["data"] or []
         for h in holding_lst:
             h["instrument_token"] = h["symboltoken"]
+            h["quantity"] = int(h["quantity"])
 
         return holding_lst
 
@@ -82,7 +83,7 @@ class AngelOneSmartConnect(SmartConnect):
         for p in position_lst:
             p["instrument_token"] = p["symboltoken"]
             p["tradingsymbol"] = p["symbolname"]
-            p["quantity"] = p["netqty"]
+            p["quantity"] = int(p["netqty"])
 
         return {"net": position_lst}
 

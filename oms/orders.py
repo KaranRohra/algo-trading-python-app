@@ -48,7 +48,7 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
     order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
     msg = f"{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
     details = {**user.to_dict(), **order}
-    log.success(f"Order placed successfully - {msg}", details)
+    log.success(f"Entry order placed successfully - {msg}", details)
 
 
 def entry_order(user: User, symbol: dict):
@@ -107,7 +107,4 @@ def exit_order(user: User, symbol: dict):
     order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
     details = {**user.to_dict(), **order}
-    if order["status"] == broker.STATUS_COMPLETE:
-        log.success(f"Position exited successfully - {msg}", details)
-    else:
-        log.warn(f"Order failed to execute - {msg}", details)
+    log.success(f"Exit order placed successfully - {msg}", details)
