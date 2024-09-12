@@ -13,20 +13,15 @@ def ema_adx_rsi_entry_v1(ohlc: List, indicator_values_present: bool = False):
     res["max_high"] = max([obj["high"] for obj in ohlc[-21:-1]])
     res["min_low"] = min([obj["low"] for obj in ohlc[-21:-1]])
 
-    res["close_above_ema50_cnt"] = s_utils.cnt_above("close", "ema50", ohlc)
-    res["close_below_ema50_cnt"] = s_utils.cnt_above("ema50", "close", ohlc)
-    res["ema50_above_ema200_cnt"] = s_utils.cnt_above("ema50", "ema200", ohlc)
-    res["ema50_below_ema200_cnt"] = s_utils.cnt_above("ema200", "ema50", ohlc)
-
     if (
-        res["close"] > res["ema20"] > res["ema50"] > res["ema200"]
+        res["close"] > res["ema20"] > res["ema200"]
         and res["adx"] >= 20
         and res["rsi"] >= 60
         and res["close"] > res["max_high"]
     ):
         res["signal"] = const.BUY
     elif (
-        res["close"] < res["ema20"] < res["ema50"] < res["ema200"]
+        res["close"] < res["ema20"] < res["ema200"]
         and res["adx"] >= 20
         and res["rsi"] <= 40
         and res["close"] < res["min_low"]
