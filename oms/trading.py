@@ -46,6 +46,6 @@ def start():
             break
         except Exception as e:
             log.error(e)
-            time.sleep(50)
+            time.sleep(20)
     
     log.warn("Trading Stopped.")
