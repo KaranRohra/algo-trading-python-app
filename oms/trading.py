@@ -14,7 +14,7 @@ from oms import user_scan
 
 def scan_users(users: List[User]):
     now = dt.now()
-    if now.minute % 13 == 0:
+    if now.minute % 13 == 0 and now.minute != 0:
         gusers.get_or_update_users(users)
         GOOGLE_SHEET_ENVIRON.set_environ()
 
@@ -46,5 +46,6 @@ def start():
             break
         except Exception as e:
             log.error(e)
+            time.sleep(50)
     
     log.warn("Trading Stopped.")

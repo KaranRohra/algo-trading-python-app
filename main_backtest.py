@@ -47,9 +47,9 @@ def get_backtest_historical_data(
 def start_backtest():
     INSTRUMENT_TOKEN = "256265"
     INTERVAL = "5minute"
-    SYMBOL = "NIFTY 50_ema_adx_rsi_v3"
-    ENTRY_FUNC = entry.ema_adx_rsi_entry_v3
-    EXIT_FUNC = exit.ema_exit_v1
+    SYMBOL = "NIFTY 50_v1_v2"
+    ENTRY_FUNC = entry.ema_adx_rsi_entry_v1
+    EXIT_FUNC = exit.ema_exit_v2
     FROM_DATE = dt.datetime(2015, 1, 1)
     TO_DATE = dt.datetime(2024, 8, 17)
 

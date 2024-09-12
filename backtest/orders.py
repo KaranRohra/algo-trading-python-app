@@ -28,9 +28,9 @@ def search_exit(strategy, ohlc: List, holdings: List, trades: List):
 
     holding: dict = holdings[0]
     if const.BUY == signal and holding['signal'] == const.SELL:
-        holding['exit_price'] = ohlc[-1]['high']
+        holding['exit_price'] = ohlc[-1]['close']
     elif const.SELL == signal and holding['signal'] == const.BUY:
-        holding['exit_price'] = ohlc[-1]['low']
+        holding['exit_price'] = ohlc[-1]['close']
 
     if holding.get('exit_price'):
         holding['to'] = ohlc[-1]['date']

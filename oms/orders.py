@@ -21,10 +21,10 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             interval=user.entry_time_frame,
         )
         if transaction_type == const.BUY and curr_ohlc[-1]["high"] > ohlc[-1]["high"]:
-            entry_price = curr_ohlc[-1]["close"]
+            entry_price = ohlc[-1]["high"]
             break
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
-            entry_price = curr_ohlc[-1]["close"]
+            entry_price = ohlc[-1]["low"]
             break
         time.sleep(1)
 
@@ -34,31 +34,37 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             {"status": "Candle High/Low not break", **user.to_dict()},
         )
         return
-    broker.place_order(
+    order_id = broker.place_order(
         tradingsymbol=symbol["tradingsymbol"],
         exchange=symbol["exchange"],
         product=symbol["params"]["product"],
         variety=broker.VARIETY_REGULAR,
         transaction_type=transaction_type,
         quantity=abs(symbol["params"]["quantity"]),
-        order_type=broker.ORDER_TYPE_MARKET,
+        order_type=broker.ORDER_TYPE_LIMIT,
+        price=entry_price,
         validity=broker.VALIDITY_DAY,
     )
-    log.success(
-        f"Order placed successfully- [{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}]",
-        {**user.to_dict()},
-    )
+    order_details = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][
+        0
+    ]
+    msg = f"{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
+    details = {**user.to_dict(), **order_details}
+    if order_details["status"] == broker.STATUS_COMPLETE:
+        log.success(f"Position entered successfully - {msg}", details)
+    else:
+        log.warn(f"Order failed to execute - {msg}", details)
 
 
 def entry_order(user: User, symbol: dict):
-    now = dt.now().replace(second=0)
+    now = (dt.now() - td(minutes=1)).replace(second=59)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
         from_date=now - td(days=get_candle_limit(user.entry_time_frame)),
         to_date=now,
         interval=user.entry_time_frame,
     )
-    result = entry.ema_adx_rsi_entry_v3(ohlc)
+    result = entry.ema_adx_rsi_entry_v2(ohlc)
     log.info(
         f"Entry Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
         result,
@@ -74,7 +80,7 @@ def exit_order(user: User, symbol: dict):
     holding = [
         h for h in user.holdings if h["instrument_token"] == symbol["instrument_token"]
     ][0]
-    now = dt.now().replace(second=0)
+    now = (dt.now() - td(minutes=1)).replace(second=59)
     ohlc = user.broker.historical_data(
         symbol["instrument_token"],
         from_date=now - td(days=get_candle_limit(user.exit_time_frame)),
@@ -82,7 +88,7 @@ def exit_order(user: User, symbol: dict):
         interval=user.exit_time_frame,
     )
 
-    result = exit.ema_exit_v1(ohlc)
+    result = exit.ema_exit_v2(ohlc)
     log.info(
         f"Exit Signal: {user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}",
         result,
@@ -105,7 +111,8 @@ def exit_order(user: User, symbol: dict):
 
     order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
+    details = {**user.to_dict(), **order}
     if order["status"] == broker.STATUS_COMPLETE:
-        log.success(f"Position exited successfully - {msg}")
+        log.success(f"Position exited successfully - {msg}", details)
     else:
-        log.warn(f"Order failed to execute - {msg}")
+        log.warn(f"Order failed to execute - {msg}", details)
