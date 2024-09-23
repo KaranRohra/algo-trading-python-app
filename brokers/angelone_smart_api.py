@@ -84,6 +84,7 @@ class AngelOneSmartConnect(SmartConnect):
             p["instrument_token"] = p["symboltoken"]
             p["tradingsymbol"] = p["symbolname"]
             p["quantity"] = int(p["netqty"])
+            p["product"] = p["producttype"]
 
         return {"net": position_lst}
 
