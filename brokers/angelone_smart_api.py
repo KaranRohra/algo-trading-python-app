@@ -2,7 +2,6 @@ import datetime
 import json
 
 import dateutil.parser
-import requests
 from SmartApi import SmartConnect
 
 
@@ -58,14 +57,6 @@ class AngelOneSmartConnect(SmartConnect):
     def __init__(self, user_id, password, totp_value, **kwargs):
         super().__init__(**kwargs)
         self.generateSession(user_id, password, totp_value)
-        self.set_master_script()
-
-    def set_master_script(self):
-        res = requests.request(
-            "GET",
-            "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json",
-        )
-        self.master_script = res.json()
 
     # COMMMON FUNCTIONS BETWEEN BROKERS
     def holdings(self):
@@ -118,11 +109,11 @@ class AngelOneSmartConnect(SmartConnect):
         )
 
         symbol_details = [
-            ms for ms in self.master_script if ms["token"] == instrument_token
+            ms for ms in self.master_script if ms["instrument_token"] == instrument_token
         ][0]
         data = self.getCandleData(
             {
-                "exchange": symbol_details["exch_seg"][:3],
+                "exchange": symbol_details["exchange"],
                 "symboltoken": instrument_token,
                 "interval": self._get_candle_interval(interval),
                 "fromdate": from_date_string,
@@ -176,8 +167,8 @@ class AngelOneSmartConnect(SmartConnect):
         trigger_price="0",
     ):
         """Place an order."""
-        symboltoken = [ms for ms in self.master_script if ms["symbol"] == tradingsymbol]
-        symboltoken = symboltoken[0]["token"] if symboltoken else None
+        symboltoken = [ms for ms in self.master_script if ms["tradingsymbol"] == tradingsymbol]
+        symboltoken = symboltoken[0]["instrument_token"] if symboltoken else None
         order_details = {
             "variety": variety,
             "tradingsymbol": tradingsymbol,
@@ -209,4 +200,5 @@ class AngelOneSmartConnect(SmartConnect):
 
     def basket(self, name):
         """Fetch basket by basket name"""
-        return json.loads(name)
+        self.master_script = json.loads(name)
+        return self.master_script
