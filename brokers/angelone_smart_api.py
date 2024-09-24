@@ -202,6 +202,11 @@ class AngelOneSmartConnect(SmartConnect):
 
         return orders_lst
 
+    def order(self, order_id):
+        """Get details of a particular order."""
+        filter_order = [o for o in self.orders() if str(o["order_id"]) == str(order_id)]
+        return filter_order[0] if filter_order else None
+
     def basket(self, name):
         """Fetch basket by basket name"""
         return json.loads(name)

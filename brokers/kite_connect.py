@@ -473,6 +473,11 @@ class KiteConnect(object):
         """Get list of orders."""
         return self._format_response(self._get("orders"))
 
+    def order(self, order_id):
+        """Get details of a particular order."""
+        filter_order = [o for o in self.orders() if str(o["order_id"]) == str(order_id)]
+        return filter_order[0] if filter_order else None
+
     def order_history(self, order_id):
         """
         Get history of individual order.

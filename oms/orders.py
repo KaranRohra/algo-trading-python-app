@@ -45,8 +45,15 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
         price=entry_price,
         validity=broker.VALIDITY_DAY,
     )
-    order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
+    time.sleep(1)  # Wait for order to be placed
+    order = broker.order(order_id)
     msg = f"{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
+    if not order:
+        log.error(
+            f"Order failed - {msg}",
+            {"status": "Order not placed", **user.to_dict()},
+        )
+        return
     details = {**user.to_dict(), **order}
     log.success(f"Entry order placed successfully - {msg}", details)
 
@@ -103,8 +110,14 @@ def exit_order(user: User, symbol: dict):
         order_type=broker.ORDER_TYPE_MARKET,
         validity=broker.VALIDITY_DAY,
     )
-
-    order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
+    time.sleep(1)  # Wait for order to be placed
+    order = broker.order(order_id)
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
+    if not order:
+        log.error(
+            f"Order failed - {msg}",
+            {"status": "Order not placed", **user.to_dict()},
+        )
+        return
     details = {**user.to_dict(), **order}
     log.success(f"Exit order placed successfully - {msg}", details)
