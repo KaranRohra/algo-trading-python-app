@@ -118,7 +118,7 @@ def get_or_update_users(old_users: List[User] | None = None) -> List[User]:
                 users.append(user_obj)
 
         return old_users or users
-    except GSpreadException as e:
+    except Exception as e:
         log.error(e)
         return old_users or []
 

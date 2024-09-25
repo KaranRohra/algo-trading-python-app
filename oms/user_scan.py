@@ -59,4 +59,5 @@ def scan_user_basket(user: User):
         scan_user_basket_without_handling_error(user)
     except Exception as e:
         log.error(e, f"{user.user_id} - {str(e)}")
+        user.broker.logout()
         user.set_broker_obj()

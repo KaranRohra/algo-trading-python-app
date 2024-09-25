@@ -214,6 +214,8 @@ class KiteConnect(object):
 
     def reconnect(self, totp_value):
         self.headers = self.get_required_headers(self.user_id, self.password, totp_value)
+    
+    def logout(self): ...
 
     def get_required_headers(self, user_id, password, totp_value):
         res = requests.post(

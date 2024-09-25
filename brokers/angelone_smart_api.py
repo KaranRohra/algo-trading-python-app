@@ -202,3 +202,7 @@ class AngelOneSmartConnect(SmartConnect):
         """Fetch basket by basket name"""
         self.master_script = json.loads(name)
         return self.master_script
+
+    def logout(self):
+        """Logout from the session."""
+        self.terminateSession(self.userId)
