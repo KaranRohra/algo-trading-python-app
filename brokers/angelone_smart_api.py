@@ -109,7 +109,9 @@ class AngelOneSmartConnect(SmartConnect):
         )
 
         symbol_details = [
-            ms for ms in self.master_script if ms["instrument_token"] == instrument_token
+            ms
+            for ms in self.master_script
+            if ms["instrument_token"] == instrument_token
         ][0]
         data = self.getCandleData(
             {
@@ -167,7 +169,9 @@ class AngelOneSmartConnect(SmartConnect):
         trigger_price="0",
     ):
         """Place an order."""
-        symboltoken = [ms for ms in self.master_script if ms["tradingsymbol"] == tradingsymbol]
+        symboltoken = [
+            ms for ms in self.master_script if ms["tradingsymbol"] == tradingsymbol
+        ]
         symboltoken = symboltoken[0]["instrument_token"] if symboltoken else None
         order_details = {
             "variety": variety,
@@ -200,7 +204,7 @@ class AngelOneSmartConnect(SmartConnect):
 
     def basket(self, name):
         """Fetch basket by basket name"""
-        self.master_script = json.loads(name)
+        self.master_script = [s for s in json.loads(name) if s.get("active") == "1"]
         return self.master_script
 
     def logout(self):
