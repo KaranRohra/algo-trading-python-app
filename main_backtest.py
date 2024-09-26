@@ -4,6 +4,7 @@ from os import environ
 import dotenv
 import pandas as pd
 import pyotp
+import time
 
 from backtest import orders
 from brokers import kite_connect
@@ -37,7 +38,7 @@ def get_backtest_historical_data(
         print(f"Fetched data for: {from_date} to {to_date}")
         from_date = to_date + dt.timedelta(seconds=to_date.second + 1)
         to_date = from_date + dt.timedelta(days=95)
-        # time.sleep(1)
+        time.sleep(1)
 
     if required_indicator_values:
         s_utils.add_indicator_values(historical_data)
@@ -45,13 +46,13 @@ def get_backtest_historical_data(
 
 
 def start_backtest():
-    INSTRUMENT_TOKEN = "256265"
+    INSTRUMENT_TOKEN = "110667271"
     INTERVAL = "5minute"
-    SYMBOL = "NIFTY 50_v1_v2"
-    ENTRY_FUNC = entry.ema_adx_rsi_entry_v1
+    SYMBOL = "CRUDEOILM_v2_v2"
+    ENTRY_FUNC = entry.ema_adx_rsi_entry_v2
     EXIT_FUNC = exit.ema_exit_v2
     FROM_DATE = dt.datetime(2015, 1, 1)
-    TO_DATE = dt.datetime(2024, 8, 17)
+    TO_DATE = dt.datetime(2024, 9, 20)
 
     ohlc = get_backtest_historical_data(INSTRUMENT_TOKEN, FROM_DATE, TO_DATE, INTERVAL)
 
@@ -70,7 +71,8 @@ def start_backtest():
 
     print(len(trades), holdings)
     pd.DataFrame(trades).to_csv(
-        f'./backtest/data/{SYMBOL}_{FROM_DATE.strftime("%Y-%m-%d")}_to_{TO_DATE.strftime("%Y-%m-%d")}.csv'
+        f'./backtest/data/{SYMBOL}_{FROM_DATE.strftime("%Y-%m-%d")}_to_{TO_DATE.strftime("%Y-%m-%d")}.csv',
+        index=False,
     )
 
 
