@@ -45,7 +45,9 @@ def start():
                 time.sleep(1)
             break
         except Exception as e:
+            for user in users:
+                user.broker.logout()
             log.error(e)
-            time.sleep(50)
+            time.sleep(20)
     
     log.warn("Trading Stopped.")

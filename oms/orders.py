@@ -21,10 +21,10 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
             interval=user.entry_time_frame,
         )
         if transaction_type == const.BUY and curr_ohlc[-1]["high"] > ohlc[-1]["high"]:
-            entry_price = ohlc[-1]["high"]
+            entry_price = curr_ohlc[-1]["close"]
             break
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
-            entry_price = ohlc[-1]["low"]
+            entry_price = curr_ohlc[-1]["close"]
             break
         time.sleep(1)
 
@@ -45,15 +45,17 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
         price=entry_price,
         validity=broker.VALIDITY_DAY,
     )
-    order_details = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][
-        0
-    ]
+    time.sleep(1)  # Wait for order to be placed
+    order = broker.order(order_id)
     msg = f"{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
-    details = {**user.to_dict(), **order_details}
-    if order_details["status"] == broker.STATUS_COMPLETE:
-        log.success(f"Position entered successfully - {msg}", details)
-    else:
-        log.warn(f"Order failed to execute - {msg}", details)
+    if not order:
+        log.error(
+            f"Order failed - {msg}",
+            {"status": "Order not placed", **user.to_dict()},
+        )
+        return
+    details = {**user.to_dict(), **order}
+    log.success(f"Entry order placed successfully - {msg}", details)
 
 
 def entry_order(user: User, symbol: dict):
@@ -108,11 +110,14 @@ def exit_order(user: User, symbol: dict):
         order_type=broker.ORDER_TYPE_MARKET,
         validity=broker.VALIDITY_DAY,
     )
-
-    order = [o for o in broker.orders() if str(o["order_id"]) == str(order_id)][0]
+    time.sleep(1)  # Wait for order to be placed
+    order = broker.order(order_id)
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
+    if not order:
+        log.error(
+            f"Order failed - {msg}",
+            {"status": "Order not placed", **user.to_dict()},
+        )
+        return
     details = {**user.to_dict(), **order}
-    if order["status"] == broker.STATUS_COMPLETE:
-        log.success(f"Position exited successfully - {msg}", details)
-    else:
-        log.warn(f"Order failed to execute - {msg}", details)
+    log.success(f"Exit order placed successfully - {msg}", details)
