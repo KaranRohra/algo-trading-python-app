@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Edit User</h1>
+        <form action="{{ url_for('edit_user', id=user._id) }}" method="POST" class="bg-white p-6 rounded shadow-md">
+            <div class="mb-4">
+                <label for="user_name" class="block text-gray-700">Name</label>
+                <input type="text" id="user_name" name="user_name" value="{{ user.user_name }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="active" class="block text-gray-700">Active</label>
+                <input type="checkbox" id="active" name="active" {% if user.active == '1' %}checked{% endif %} class="mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="user_id" class="block text-gray-700">User ID</label>
+                <input type="user_id" id="user_id" name="user_id" value="{{ user.user_id }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="start_time" class="block text-gray-700">Start Time</label>
+                <input type="text" id="start_time" name="start_time" value="{{ user.start_time }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="end_time" class="block text-gray-700">End Time</label>
+                <input type="text" id="end_time" name="end_time" value="{{ user.end_time }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="risk_amount" class="block text-gray-700">Risk Amount</label>
+                <input type="number" id="risk_amount" name="risk_amount" value="{{ user.risk_amount }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="broker_name" class="block text-gray-700">Broker Name</label>
+                <input type="text" id="broker_name" name="broker_name" value="{{ user.broker_name }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+
+            <div class="mb-4">
+                <label for="basket" class="block text-gray-700">Basket</label>
+                <input type="text" id="basket" name="basket" value="{{ user.basket }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="entry_time_frame" class="block text-gray-700">Entry Time Frame</label>
+                <input type="text" id="entry_time_frame" name="entry_time_frame" value="{{ user.entry_time_frame }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="exit_time_frame" class="block text-gray-700">Exit Time Frame</label>
+                <input type="text" id="exit_time_frame" name="exit_time_frame" value="{{ user.exit_time_frame }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="priority" class="block text-gray-700">Priority</label>
+                <input type="number" id="priority" name="priority" value="{{ user.priority }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
