@@ -16,7 +16,7 @@ environments = _db["environment"]
 
 
 def insert_log(log_type, message, details=None):
-    print(f"[{dt.now()}] [{log_type}] [{message}] - [{details}]")
+    print(f"[{dt.now()}] [{log_type}] [{message}]")
     logs.insert_one(
         {
             "timestamp": str(dt.now()),

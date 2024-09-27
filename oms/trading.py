@@ -5,19 +5,18 @@ from typing import List
 
 import schedule
 
-from mongodb import users as gusers
-from mongodb.environ import GOOGLE_SHEET_ENVIRON
-from mongodb.users import User
 from logs import log
+from mongodb.environ import GOOGLE_SHEET_ENVIRON
+from mongodb.users import User, get_or_update_users
 from oms import user_scan
 
 
-def scan_users(users: List[User]):
-    now = dt.now()
-    if now.minute % 13 == 0 and now.minute != 0:
-        gusers.get_or_update_users(users)
-        GOOGLE_SHEET_ENVIRON.set_environ()
+def set_db_data(users: List[User]):
+    get_or_update_users(users)
+    GOOGLE_SHEET_ENVIRON.set_environ()
 
+
+def scan_users(users: List[User]):
     for user in users:
         Thread(
             target=user_scan.scan_user_basket,
@@ -38,7 +37,8 @@ def start():
     while True:
         try:
             GOOGLE_SHEET_ENVIRON.set_environ()
-            users = gusers.get_or_update_users()
+            users = get_or_update_users()
+            schedule.every().minute.at(":30").do(set_db_data, users)
             schedule.every().minute.at(":00").do(scan_users, users)
             while is_trading_time():
                 schedule.run_pending()
@@ -49,5 +49,5 @@ def start():
                 user.broker.logout()
             log.error(e)
             time.sleep(20)
-    
+
     log.warn("Trading Stopped.")

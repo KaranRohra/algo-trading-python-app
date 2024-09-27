@@ -7,26 +7,27 @@ from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
+from utils.constants import Env
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv(Env.SECRET_KEY)
 bcrypt = Bcrypt(app)
 
 # MongoDB connection
-client = MongoClient(os.environ["MONGO_URI"])  # Connect to MongoDB
-db = client[os.environ["MONGO_DB"]]  # Connect to the "dev" database
+client = MongoClient(os.environ[Env.MONGO_URI])  # Connect to MongoDB
+db = client[os.environ[Env.MONGO_DB]]  # Connect to the "dev" database
 users_collection = db["users"]  # Collection for users
 logs_collection = db["logs"]  # Collection for logs
 env_collection = db["environment"]  # Collection for key-value pairs
 
 # Admin login credentials from environment variables
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
-ADMIN_PASSWORD_HASH = bcrypt.generate_password_hash(os.getenv("ADMIN_PASSWORD")).decode(
-    "utf-8"
-)
+ADMIN_EMAIL = os.getenv(Env.ADMIN_EMAIL)
+ADMIN_PASSWORD_HASH = bcrypt.generate_password_hash(
+    os.getenv(Env.ADMIN_PASSWORD)
+).decode("utf-8")
 
 
 # User session management
@@ -37,8 +38,6 @@ def require_login():
 
 
 # Routes
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -69,30 +68,44 @@ def user_list():
     return render_template("users.html", users=users)
 
 
+def save_user(user_data, user_id=None):
+    new_data = {
+        "user_name": user_data["user_name"],
+        "active": "1" if user_data.get("active") else "0",
+        "user_id": user_data["user_id"],
+        "start_time": user_data["start_time"],
+        "end_time": user_data["end_time"],
+        "risk_amount": user_data["risk_amount"],
+        "broker_name": user_data["broker_name"],
+        "basket": user_data["basket"],
+        "entry_time_frame": user_data["entry_time_frame"],
+        "exit_time_frame": user_data["exit_time_frame"],
+        "priority": int(user_data["priority"]),
+    }
+    if user_id:
+        users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": new_data})
+        flash("User updated successfully", "success")
+    else:
+        user = users_collection.insert_one(new_data)
+        flash("User created successfully", "success")
+        return user.inserted_id
+
+
 @app.route("/users/edit/<id>", methods=["GET", "POST"])
-def edit_user(id):
+def edit_user(id=None):
     if request.method == "GET":
         user = users_collection.find_one({"_id": ObjectId(id)})
         return render_template("edit_user.html", user=user)
-    new_data = {
-        "user_name": request.form["user_name"],
-        "active": '1' if request.form.get("active") else '0',
-        "user_id": request.form["user_id"],
-        "start_time": request.form["start_time"],
-        "end_time": request.form["end_time"],
-        "risk_amount": request.form["risk_amount"],
-        "broker_name": request.form["broker_name"],
-        "basket": request.form["basket"],
-        "entry_time_frame": request.form["entry_time_frame"],
-        "exit_time_frame": request.form["exit_time_frame"],
-        "priority": int(request.form["priority"]),
-        "password": request.form["password"],
-        "two_fa": request.form["two_fa"],
-        "api_key": request.form["api_key"],
-    }
-    users_collection.update_one({"_id": ObjectId(id)}, {"$set": new_data})
-    flash("User updated successfully", "success")
-    return redirect(url_for('edit_user', id=id))
+    save_user(request.form, id)
+    return redirect(url_for("edit_user", id=id))
+
+
+@app.route("/users/create", methods=["GET", "POST"])
+def add_user():
+    if request.method == "POST":
+        user_id = save_user(request.form)
+        return redirect(url_for("edit_user", id=user_id))
+    return render_template("add_user.html")
 
 
 @app.route("/env", methods=["GET", "POST"])
@@ -137,7 +150,7 @@ def logs():
                 log["details"]["date"] = str(
                     log["details"]["date"] + timedelta(hours=5, minutes=30)
                 )
-            log['details'] = json.dumps(log['details'])
+            log["details"] = json.dumps(log["details"])
         log_entries.append(log)
 
     return render_template(
@@ -148,15 +161,10 @@ def logs():
     )
 
 
-# Helper to add log entries
-def add_log(log_type, message):
-    logs_collection.insert_one({"type": log_type, "message": message})
-
-
 @app.route("/")
 def home():
     return redirect(url_for("user_list"))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.getenv(Env.DEBUG_WEB_APP, "False") == "True")

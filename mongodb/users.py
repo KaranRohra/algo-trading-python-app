@@ -1,5 +1,7 @@
+import json
 import time
 from datetime import datetime
+from os import environ
 from typing import List
 
 import pyotp
@@ -8,7 +10,7 @@ from brokers import angelone_smart_api, kite_connect
 from logs import log
 from mongodb import connection as mongo_connection
 from utils.common import time_str_to_curr_datetime
-from utils.constants import Broker
+from utils.constants import Broker, Env
 
 
 class User:
@@ -98,9 +100,15 @@ class User:
 def get_or_update_users(old_users: List[User] | None = None) -> List[User]:
     """Returns a list of users from the google sheet."""
     users = list(mongo_connection.users.find())
+    users_secrets = json.loads(environ.get(Env.USERS_SECRETS))
     new_users: List[User] = []
+
     for i in range(len(users)):
-        user_obj = User(**users[i])
+        user_secrets = users_secrets.get(users[i]["user_id"])
+        if not user_secrets:
+            log.error(f"User {users[i]['user_id']} not found in secrets")
+            continue
+        user_obj = User(**users[i], **user_secrets)
         if old_users:
             user_obj.broker = old_users[i - 1].broker
             old_users[i - 1] = user_obj
