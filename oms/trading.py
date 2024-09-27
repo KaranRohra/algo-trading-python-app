@@ -17,7 +17,7 @@ def set_db_data(users: List[User]):
 
 
 def scan_users(users: List[User]):
-    for user in users:
+    for user in sorted(users, key=lambda x: x.priority, reverse=True):
         Thread(
             target=user_scan.scan_user_basket,
             args=(user,),

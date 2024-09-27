@@ -110,16 +110,13 @@ def get_or_update_users(old_users: List[User] | None = None) -> List[User]:
             continue
         user_obj = User(**users[i], **user_secrets)
         if old_users:
-            user_obj.broker = old_users[i - 1].broker
-            old_users[i - 1] = user_obj
+            user_obj.broker = old_users[i].broker
+            old_users[i] = user_obj
         else:
             user_obj.set_broker_obj()
-            users.append(user_obj)
         new_users.append(user_obj)
 
-    users = old_users or new_users
-    users.sort(key=lambda u: u.priority, reverse=True)
-    return users
+    return old_users or new_users
 
 
 def get_broker_obj(broker_name):
