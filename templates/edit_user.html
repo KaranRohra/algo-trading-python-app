@@ -46,6 +46,18 @@
                 <input type="text" id="exit_time_frame" name="exit_time_frame" value="{{ user.exit_time_frame }}" class="w-full p-2 border border-gray-300 rounded mt-1">
             </div>
             <div class="mb-4">
+                <label for="password" class="block text-gray-700">Password</label>
+                <input type="text" id="password" name="password" value="{{ user.password }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="two_fa" class="block text-gray-700">Two Factor Authentication</label>
+                <input type="text" id="two_fa" name="two_fa" value="{{ user.two_fa }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
+                <label for="api_key" class="block text-gray-700">API Key</label>
+                <input type="text" id="api_key" name="api_key" value="{{ user.api_key }}" class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div class="mb-4">
                 <label for="priority" class="block text-gray-700">Priority</label>
                 <input type="number" id="priority" name="priority" value="{{ user.priority }}" class="w-full p-2 border border-gray-300 rounded mt-1">
             </div>

@@ -85,7 +85,10 @@ def edit_user(id):
         "basket": request.form["basket"],
         "entry_time_frame": request.form["entry_time_frame"],
         "exit_time_frame": request.form["exit_time_frame"],
-        "priority": request.form["priority"]
+        "priority": int(request.form["priority"]),
+        "password": request.form["password"],
+        "two_fa": request.form["two_fa"],
+        "api_key": request.form["api_key"],
     }
     users_collection.update_one({"_id": ObjectId(id)}, {"$set": new_data})
     flash("User updated successfully", "success")

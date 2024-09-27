@@ -73,6 +73,8 @@
 <script>
 
     function formatJson(json) {
+        if(!json) return json;
+        
         Object.keys(json).forEach((key) => {
             if (typeof json[key] === 'object') {
                 json[key] = formatJson(json[key]);

@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from threading import Thread
 
-from gsheets.users import User
+from mongodb.users import User
 from logs import log
 from oms import orders
 from utils import common

@@ -5,9 +5,9 @@ from typing import List
 
 import schedule
 
-from gsheets import users as gusers
-from gsheets.environ import GOOGLE_SHEET_ENVIRON
-from gsheets.users import User
+from mongodb import users as gusers
+from mongodb.environ import GOOGLE_SHEET_ENVIRON
+from mongodb.users import User
 from logs import log
 from oms import user_scan
 

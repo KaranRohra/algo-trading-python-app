@@ -3,13 +3,12 @@ from datetime import datetime
 from typing import List
 
 import pyotp
-from gspread.exceptions import GSpreadException
 
-from brokers import kite_connect, angelone_smart_api
-from gsheets import connection
+from brokers import angelone_smart_api, kite_connect
 from logs import log
-from utils.common import time_str_to_curr_datetime, title_to_snake
-from utils.constants import Broker, SheetIndex
+from mongodb import connection as mongo_connection
+from utils.common import time_str_to_curr_datetime
+from utils.constants import Broker
 
 
 class User:
@@ -30,6 +29,8 @@ class User:
         in_process_symbols=set(),
         holdings=[],
         api_key=None,
+        priority=0,
+        **kwargs,
     ):
         self.user_name: str = user_name
         self.user_id: str = user_id
@@ -46,6 +47,7 @@ class User:
         self.exit_time_frame: str = exit_time_frame
         self.holdings: List[dict] = holdings
         self.api_key: str = api_key
+        self.priority: int = int(priority)
 
     def set_broker_obj(self):
         retry = 0
@@ -95,32 +97,21 @@ class User:
 
 def get_or_update_users(old_users: List[User] | None = None) -> List[User]:
     """Returns a list of users from the google sheet."""
-    try:
-        worksheet = connection.get_sheet().get_worksheet(SheetIndex.USER)
-        values = worksheet.get_all_values()
-        headers = [title_to_snake(h) for h in values[0]]
+    users = list(mongo_connection.users.find())
+    new_users: List[User] = []
+    for i in range(len(users)):
+        user_obj = User(**users[i])
+        if old_users:
+            user_obj.broker = old_users[i - 1].broker
+            old_users[i - 1] = user_obj
+        else:
+            user_obj.set_broker_obj()
+            users.append(user_obj)
+        new_users.append(user_obj)
 
-        users: List[User] = []
-        for i in range(1, len(values)):
-            # Row is incomplete, some values are missing
-            if len(values[i]) != len(headers):
-                continue
-            user = {}
-            for j in range(len(headers)):
-                user[headers[j]] = values[i][j]
-
-            user_obj = User(**user)
-            if old_users:
-                user_obj.broker = old_users[i - 1].broker
-                old_users[i - 1] = user_obj
-            else:
-                user_obj.set_broker_obj()
-                users.append(user_obj)
-
-        return old_users or users
-    except Exception as e:
-        log.error(e)
-        return old_users or []
+    users = old_users or new_users
+    users.sort(key=lambda u: u.priority, reverse=True)
+    return users
 
 
 def get_broker_obj(broker_name):

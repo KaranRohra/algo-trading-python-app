@@ -11,6 +11,8 @@ _db = _client[environ[Env.MONGO_DB]]
 trades = _db["trades"]
 holdings = _db["holdings"]
 logs = _db["logs"]
+users = _db["users"]
+environments = _db["environment"]
 
 
 def insert_log(log_type, message, details=None):

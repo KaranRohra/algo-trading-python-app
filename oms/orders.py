@@ -2,7 +2,7 @@ import time
 from datetime import datetime as dt
 from datetime import timedelta as td
 
-from gsheets.users import User
+from mongodb.users import User
 from logs import log
 from strategies import entry, exit
 from utils import constants as const
@@ -49,7 +49,7 @@ def place_entry_order(user: User, symbol: dict, ohlc: dict, transaction_type: st
     order = broker.order(order_id)
     msg = f"{user.user_id} - {symbol['exchange']}:{symbol['tradingsymbol']}"
     if not order:
-        log.error(
+        log.warn(
             f"Order failed - {msg}",
             {"status": "Order not placed", **user.to_dict()},
         )
@@ -114,7 +114,7 @@ def exit_order(user: User, symbol: dict):
     order = broker.order(order_id)
     msg = f"{user.user_id} - {holding['exchange']}:{holding['tradingsymbol']}"
     if not order:
-        log.error(
+        log.warn(
             f"Order failed - {msg}",
             {"status": "Order not placed", **user.to_dict()},
         )
