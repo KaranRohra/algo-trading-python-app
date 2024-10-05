@@ -1,6 +1,6 @@
 import { usersCollection } from "@/lib/mongodb";
 import authenticate from "../auth";
-import UserList from "../components/UserList";
+import UserList from "@/components/UserList";
 import { User } from "./types";
 
 const page = async () => {

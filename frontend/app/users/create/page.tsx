@@ -1,5 +1,5 @@
 import authenticate from "@/app/auth";
-import UserForm from "@/app/components/UserForm";
+import UserForm from "@/components/UserForm";
 import { usersCollection } from "@/lib/mongodb";
 import { User } from "../types";
 

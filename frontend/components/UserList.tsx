@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { User } from "../users/types";
+import { User } from "@/app/users/types";
 
 const UserList = ({ users }: { users: User[] }) => {
   return (

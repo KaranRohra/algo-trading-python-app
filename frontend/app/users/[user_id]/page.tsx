@@ -2,7 +2,7 @@ import authenticate from "@/app/auth";
 import { usersCollection } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
-import UserForm from "../../components/UserForm";
+import UserForm from "@/components/UserForm";
 import { User } from "../types";
 
 const page = async ({ params }: { params: { user_id: string } }) => {

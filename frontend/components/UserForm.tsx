@@ -5,7 +5,7 @@ import {
   TradeInstrument,
   TRANSACTION_TYPE,
   User,
-} from "../users/types";
+} from "@/app/users/types";
 
 interface UserFormProps {
   user?: User;
