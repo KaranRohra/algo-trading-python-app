@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="bg-gray-900 text-white p-4 shadow-lg">
+    <header className="bg-gray-900 text-white p-2 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <nav className="space-x-6 flex-grow">
           <Link href="/users" className="hover:text-gray-300 transition-colors duration-200 text-lg">

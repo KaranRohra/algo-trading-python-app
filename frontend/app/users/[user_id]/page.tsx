@@ -1,14 +1,46 @@
-"use client";
+import authenticate from "@/app/auth";
+import { usersCollection } from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+import { redirect } from "next/navigation";
+import UserForm from "../../components/UserForm";
+import { User } from "../types";
 
-import UserForm from "./UserForm";
+const page = async ({ params }: { params: { user_id: string } }) => {
+  const getUserbyId = async () => {
+    "use server";
 
-const page = ({ params }: { params: { user_id: string } }) => {
-  console.log(params.user_id);
+    const _id = params.user_id;
+    const user = (await usersCollection.findOne({
+      _id: new ObjectId(_id),
+    })) as User;
+    delete user._id;
+    return JSON.parse(JSON.stringify(user));
+  };
+
+  const handleFormSubmit = async (user: User) => {
+    "use server";
+    delete user._id;
+    await usersCollection.updateOne(
+      { _id: new ObjectId(params.user_id) },
+      { $set: user }
+    );
+  };
+
+  const handleDeleteUser = async () => {
+    "use server";
+    await usersCollection.deleteOne({ _id: new ObjectId(params.user_id) });
+    redirect("/users");
+  };
+
+  const user = await getUserbyId();
+
   return (
-    <div>
-      <UserForm />
-    </div>
+    <UserForm
+      user={user}
+      handleDeleteUser={handleDeleteUser}
+      handleFormSubmit={handleFormSubmit}
+    />
   );
 };
 
-export default page;
+export default authenticate(page);

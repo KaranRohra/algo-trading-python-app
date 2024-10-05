@@ -1,78 +1,62 @@
+"use client";
 import { useState } from "react";
+import {
+  FormSubmitStatus,
+  TradeInstrument,
+  TRANSACTION_TYPE,
+  User,
+} from "../users/types";
 
-type TradeInstrument = {
-  trading_symbol: string;
-  product: string;
-  quantity: number;
-  active: boolean;
-  direction: "BUY" | "SELL" | "BOTH";
-};
+interface UserFormProps {
+  user?: User;
+  handleFormSubmit: (formData: User) => Promise<void>;
+  handleDeleteUser?: () => Promise<void>;
+}
 
-type Strategy = {
-  entry_instrument: {
-    trading_symbol: string;
-    timeframe: string;
-  };
-  exit_instrument: {
-    trading_symbol: string;
-    timeframe: string;
-  };
-  trade_instruments: TradeInstrument[];
-};
-
-type UserForm = {
-  user_name: string;
-  active: boolean;
-  user_id: string;
-  start_time: string;
-  end_time: string;
-  risk_amount: number;
-  broker_name: string;
-  priority: string;
-  strategies: Strategy[];
-};
-
-const UserForm = () => {
-  const [formData, setFormData] = useState<UserForm>({
-    user_name: "John Doe",
-    active: true,
-    user_id: "user123",
-    start_time: "09:00 AM",
-    end_time: "05:00 PM",
-    risk_amount: 1000,
-    broker_name: "BrokerName",
-    priority: "1",
-    strategies: [
-      {
-        entry_instrument: {
-          trading_symbol: "AAPL",
-          timeframe: "1h", // For example, 1 hour timeframe
-        },
-        exit_instrument: {
-          trading_symbol: "GOOGL",
-          timeframe: "1d", // For example, 1 day timeframe
-        },
-        trade_instruments: [
-          {
-            trading_symbol: "TSLA",
-            product: "Stock",
-            quantity: 10,
-            active: true,
-            direction: "BUY",
+const UserForm: React.FC<UserFormProps> = ({
+  user,
+  handleFormSubmit,
+  handleDeleteUser,
+}) => {
+  const [submitStatus, setSubmitStatus] = useState<FormSubmitStatus>(
+    FormSubmitStatus.NOT_STARTED
+  );
+  const [formData, setFormData] = useState<User>(
+    user || {
+      user_name: "",
+      active: false,
+      user_id: "",
+      start_time: "",
+      end_time: "",
+      risk_amount: 0,
+      broker_name: "",
+      priority: "",
+      strategies: [
+        {
+          entry_instrument: {
+            trading_symbol: "",
+            timeframe: "",
           },
-          {
-            trading_symbol: "AMZN",
-            product: "Stock",
-            quantity: 5,
-            active: false,
-            direction: "SELL",
+          exit_instrument: {
+            trading_symbol: "",
+            timeframe: "",
           },
-        ],
-      },
-    ],
-  });
+          trade_instruments: [
+            {
+              trading_symbol: "",
+              product: "",
+              quantity: 0,
+              active: false,
+              trade_on_signal: TRANSACTION_TYPE.BOTH,
+              transaction_type: TRANSACTION_TYPE.BOTH,
+            },
+          ],
+        },
+      ],
+    }
+  );
 
-  const handleInputChange = (key: keyof UserForm, value: any) => {
+  const handleInputChange = (key: keyof User, value: any) => {
     setFormData((prevData) => ({
       ...prevData,
       [key]: value,
@@ -141,7 +125,8 @@ const UserForm = () => {
               product: "",
               quantity: 0,
               active: false,
-              direction: "BUY",
+              trade_on_signal: TRANSACTION_TYPE.BOTH,
+              transaction_type: TRANSACTION_TYPE.BOTH,
             },
           ],
         },
@@ -156,7 +141,8 @@ const UserForm = () => {
       product: "",
       quantity: 0,
       active: false,
-      direction: "BUY",
+      trade_on_signal: TRANSACTION_TYPE.BOTH,
+      transaction_type: TRANSACTION_TYPE.BOTH,
     });
     setFormData((prev) => ({
       ...prev,
@@ -188,18 +174,52 @@ const UserForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    setSubmitStatus(FormSubmitStatus.IN_PROGRESS);
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    await handleFormSubmit(formData);
+    setSubmitStatus(FormSubmitStatus.COMPLETED);
+    setTimeout(() => setSubmitStatus(FormSubmitStatus.NOT_STARTED), 3000);
+  };
+
+  const handleDelete = async () => {
+    const response = prompt("Please enter YES to delete the user: ");
+    if (response === "YES") if (handleDeleteUser) await handleDeleteUser();
   };
 
   return (
-        <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">User Form</h1>
+    <div className="container mx-auto p-6 mt-6 bg-white shadow-md rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">User Form</h1>
+        {handleDeleteUser && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Delete User
+          </button>
+        )}
+      </div>
+      {submitStatus === FormSubmitStatus.IN_PROGRESS && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-md">
+            <p className="text-gray-800">Submitting...</p>
+          </div>
+        </div>
+      )}
+
+      {submitStatus === FormSubmitStatus.COMPLETED && (
+        <div className="fixed top-0 left-0 right-0 bg-green-500 text-white text-center p-4">
+          Form submission completed successfully!
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
             <input
               type="text"
               value={formData.user_name}
@@ -208,9 +228,11 @@ const UserForm = () => {
               required
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">User ID</label>
+            <label className="block text-sm font-medium text-gray-700">
+              User ID
+            </label>
             <input
               type="text"
               value={formData.user_id}
@@ -219,9 +241,11 @@ const UserForm = () => {
               required
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">Start Time</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Start Time
+            </label>
             <input
               type="text"
               value={formData.start_time}
@@ -229,9 +253,11 @@ const UserForm = () => {
               className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">End Time</label>
+            <label className="block text-sm font-medium text-gray-700">
+              End Time
+            </label>
             <input
               type="text"
               value={formData.end_time}
@@ -239,9 +265,11 @@ const UserForm = () => {
               className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">Risk Amount</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Risk Amount
+            </label>
             <input
               type="number"
               value={formData.risk_amount}
@@ -251,19 +279,25 @@ const UserForm = () => {
               className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">Broker Name</label>
-            <input
-              type="text"
+            <label className="block text-sm font-medium text-gray-700">
+              Broker Name
+            </label>
+            <select
               value={formData.broker_name}
               onChange={(e) => handleInputChange("broker_name", e.target.value)}
               className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="Zerodha">Zerodha</option>
+              <option value="AngelOne">AngelOne</option>
+            </select>
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">Priority</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Priority
+            </label>
             <input
               type="number"
               value={formData.priority}
@@ -273,9 +307,11 @@ const UserForm = () => {
               className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-    
+
           <div>
-            <label className="block text-sm font-medium text-gray-700">Active</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Active
+            </label>
             <input
               type="checkbox"
               checked={formData.active}
@@ -284,9 +320,12 @@ const UserForm = () => {
             />
           </div>
         </div>
-    
+
         {formData.strategies.map((strategy, strategyIndex) => (
-          <div key={strategyIndex} className="border p-6 rounded-lg mb-8 bg-gray-50">
+          <div
+            key={strategyIndex}
+            className="border p-6 rounded-lg mb-8 bg-gray-50"
+          >
             <div className="flex justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-800">
                 Strategy {strategyIndex + 1}
@@ -299,7 +338,7 @@ const UserForm = () => {
                 Delete Strategy
               </button>
             </div>
-    
+
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -320,13 +359,12 @@ const UserForm = () => {
                   required
                 />
               </div>
-    
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Entry Instrument - Time Frame
                 </label>
-                <input
-                  type="text"
+                <select
                   value={strategy.entry_instrument.timeframe}
                   onChange={(e) =>
                     handleStrategyChange(
@@ -338,9 +376,18 @@ const UserForm = () => {
                   }
                   className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
-                />
+                >
+                  <option value="minute">minute</option>
+                  <option value="day">day</option>
+                  <option value="3minute">3minute</option>
+                  <option value="5minute">5minute</option>
+                  <option value="10minute">10minute</option>
+                  <option value="15minute">15minute</option>
+                  <option value="30minute">30minute</option>
+                  <option value="60minute">60minute</option>
+                </select>
               </div>
-    
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Exit Instrument - Trading Symbol
@@ -360,13 +407,12 @@ const UserForm = () => {
                   required
                 />
               </div>
-    
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Exit Instrument - Time Frame
                 </label>
-                <input
-                  type="text"
+                <select
                   value={strategy.exit_instrument.timeframe}
                   onChange={(e) =>
                     handleStrategyChange(
@@ -378,14 +424,28 @@ const UserForm = () => {
                   }
                   className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
-                />
+                >
+                  <option value="minute">minute</option>
+                  <option value="day">day</option>
+                  <option value="3minute">3minute</option>
+                  <option value="5minute">5minute</option>
+                  <option value="10minute">10minute</option>
+                  <option value="15minute">15minute</option>
+                  <option value="30minute">30minute</option>
+                  <option value="60minute">60minute</option>
+                </select>
               </div>
             </div>
-    
+
             <div className="mb-4">
-              <h3 className="text-lg font-bold mb-4 text-gray-800">Trade Instruments</h3>
+              <h3 className="text-lg font-bold mb-4 text-gray-800">
+                Trade Instruments
+              </h3>
               {strategy.trade_instruments.map((instrument, instrumentIndex) => (
-                <div key={instrumentIndex} className="mb-4 border p-6 rounded-lg bg-white">
+                <div
+                  key={instrumentIndex}
+                  className="mb-4 border p-6 rounded-lg bg-white"
+                >
                   <div className="mb-4 flex justify-between">
                     <h4 className="text-md font-bold text-gray-800">
                       Instrument {instrumentIndex + 1}
@@ -400,7 +460,7 @@ const UserForm = () => {
                       Delete Instrument
                     </button>
                   </div>
-    
+
                   <div className="grid grid-cols-2 gap-6 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -421,7 +481,7 @@ const UserForm = () => {
                         required
                       />
                     </div>
-    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Product
@@ -441,7 +501,7 @@ const UserForm = () => {
                         required
                       />
                     </div>
-    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Quantity
@@ -461,18 +521,40 @@ const UserForm = () => {
                         required
                       />
                     </div>
-    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
-                        Direction
+                        Trade only on Signal
                       </label>
                       <select
-                        value={instrument.direction}
+                        value={instrument.trade_on_signal}
                         onChange={(e) =>
                           handleTradeInstrumentChange(
                             strategyIndex,
                             instrumentIndex,
-                            "direction",
+                            "trade_on_signal",
+                            e.target.value
+                          )
+                        }
+                        className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                        <option value="BOTH">BOTH</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Transaction Type
+                      </label>
+                      <select
+                        value={instrument.transaction_type}
+                        onChange={(e) =>
+                          handleTradeInstrumentChange(
+                            strategyIndex,
+                            instrumentIndex,
+                            "transaction_type",
                             e.target.value
                           )
                         }
@@ -486,7 +568,7 @@ const UserForm = () => {
                   </div>
                 </div>
               ))}
-    
+
               <button
                 type="button"
                 onClick={() => addTradeInstrument(strategyIndex)}
@@ -497,8 +579,8 @@ const UserForm = () => {
             </div>
           </div>
         ))}
-    
-        <div className="mb-8">
+
+        <div className="mb-8 flex justify-between">
           <button
             type="button"
             onClick={addStrategy}
@@ -506,12 +588,10 @@ const UserForm = () => {
           >
             Add Strategy
           </button>
-        </div>
 
-        <div className="border-t pt-6">
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-6 hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Submit
           </button>
