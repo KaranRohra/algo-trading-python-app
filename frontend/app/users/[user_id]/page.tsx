@@ -2,8 +2,8 @@ import authenticate from "@/app/auth";
 import { usersCollection } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
-import UserForm from "@/components/UserForm";
-import { User } from "../types";
+import UserForm from "@/components/user/UserForm";
+import { User } from "@/components/user/types";
 
 const page = async ({ params }: { params: { user_id: string } }) => {
   const getUserbyId = async () => {

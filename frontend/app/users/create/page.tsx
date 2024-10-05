@@ -1,7 +1,7 @@
 import authenticate from "@/app/auth";
-import UserForm from "@/components/UserForm";
+import UserForm from "@/components/user/UserForm";
 import { usersCollection } from "@/lib/mongodb";
-import { User } from "../types";
+import { User } from "@/components/user/types";
 
 const page = () => {
   const handleFormSubmit = async (user: User) => {

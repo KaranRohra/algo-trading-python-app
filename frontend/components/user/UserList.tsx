@@ -1,5 +1,5 @@
+import { User } from "@/components/user/types";
 import Link from "next/link";
-import { User } from "@/app/users/types";
 
 const UserList = ({ users }: { users: User[] }) => {
   return (
