@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { Brokers } from "../constants";
 
 export enum TRANSACTION_TYPE {
   BUY = "BUY",
@@ -13,7 +14,7 @@ export enum FormSubmitStatus {
 }
 
 export interface Instrument {
-  trading_symbol: string;
+  tradingsymbol: string;
   instrument_token?: string;
   exchange?: string;
 }
@@ -44,7 +45,12 @@ export interface User {
   start_time: string;
   end_time: string;
   risk_amount: number;
-  broker_name: string;
+  broker_name: Brokers;
   priority: string;
   strategies: Strategy[];
+}
+
+export interface InstrumentSuggestion {
+  index: number;
+  value: string;
 }

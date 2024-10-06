@@ -1,11 +1,9 @@
-import {
-    Strategy,
-    TRANSACTION_TYPE,
-    User
-} from "@/components/user/types";
-import React, { Dispatch, SetStateAction } from "react";
-import { TIME_FRAME_OPTIONS } from "../constants";
-import { SelectInput, TextInput } from "../Inputs";
+import { Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { AutoCompleteInput } from "../AutoComplete";
+import { Brokers, TIME_FRAME_OPTIONS } from "../constants";
+import { SelectInput } from "../Inputs";
+import { getAngelOneSymbols, getZerodhaSymbols } from "../utils";
 import { TradeInstrumentForm } from "./TradeInstrumentForm";
 
 interface StrategyFormProps {
@@ -15,25 +13,27 @@ interface StrategyFormProps {
   setFormData: Dispatch<SetStateAction<User>>;
 }
 
-export const StrategyForm: React.FC<StrategyFormProps> = ({
-  strategyIndex,
-  strategy,
-  formData,
-  setFormData,
-}) => {
-  const handleStrategyChange = (
-    strategyIndex: number,
-    section: "entry_instrument" | "exit_instrument",
-    field: "trading_symbol" | "timeframe",
-    value: string
-  ) => {
+export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strategy, formData, setFormData }) => {
+  const [tradingInstruments, setTradingInstruments] = useState<Instrument[]>([]);
+  const [tradingSymbols, setTradingSymbols] = useState<InstrumentSuggestion[]>([]);
+
+  const handleStrategyChange = (strategyIndex: number, section: "entry_instrument" | "exit_instrument", field: "tradingsymbol" | "timeframe", value: any) => {
     const updatedStrategies = [...formData.strategies];
+    let modifiedValue = { ...updatedStrategies[strategyIndex][section] };
+    if (field === "tradingsymbol") {
+      modifiedValue = {
+        ...modifiedValue,
+        ...tradingInstruments[value.index],
+      };
+    } else {
+      modifiedValue = {
+        ...modifiedValue,
+        [field]: value as string,
+      };
+    }
     updatedStrategies[strategyIndex] = {
       ...updatedStrategies[strategyIndex],
-      [section]: {
-        ...updatedStrategies[strategyIndex][section],
-        [field]: value,
-      },
+      [section]: modifiedValue,
     };
     setFormData((prev) => ({
       ...prev,
@@ -44,7 +44,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({
   const addTradeInstrument = (strategyIndex: number) => {
     const updatedStrategies = [...formData.strategies];
     updatedStrategies[strategyIndex].trade_instruments.push({
-      trading_symbol: "",
+      tradingsymbol: "",
       product: "",
       quantity: 0,
       active: false,
@@ -58,94 +58,79 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({
   };
 
   const deleteStrategy = (strategyIndex: number) => {
-    const updatedStrategies = formData.strategies.filter(
-      (_, index) => index !== strategyIndex
-    );
+    const updatedStrategies = formData.strategies.filter((_, index) => index !== strategyIndex);
     setFormData((prev) => ({
       ...prev,
       strategies: updatedStrategies,
     }));
   };
 
+  const updateInstrumentSuggestion = async () => {
+    let suggestions: Instrument[] = [];
+    switch (formData.broker_name) {
+      case Brokers.ANGELONE:
+        suggestions = await getAngelOneSymbols();
+        break;
+      case Brokers.ZERODHA:
+        suggestions = await getZerodhaSymbols();
+        break;
+    }
+    setTradingInstruments(suggestions);
+    setTradingSymbols(
+      suggestions.map((s, i) => ({
+        index: i,
+        value: `${s.tradingsymbol} - ${s.exchange}`,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    updateInstrumentSuggestion();
+  }, [formData.broker_name]);
+
   return (
     <div key={strategyIndex} className="border p-6 rounded-lg mb-8 bg-gray-50">
       <div className="flex justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-800">
-          Strategy {strategyIndex + 1}
-        </h2>
-        <button
-          type="button"
-          onClick={() => deleteStrategy(strategyIndex)}
-          className="text-red-500 text-sm"
-        >
+        <h2 className="text-lg font-bold text-gray-800">Strategy {strategyIndex + 1}</h2>
+        <button type="button" onClick={() => deleteStrategy(strategyIndex)} className="text-red-500 text-sm">
           Delete Strategy
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <TextInput
+        <AutoCompleteInput
           label="Entry Instrument - Trading Symbol"
-          value={strategy.entry_instrument.trading_symbol}
-          onChange={(e) =>
-            handleStrategyChange(
-              strategyIndex,
-              "entry_instrument",
-              "trading_symbol",
-              e.target.value
-            )
-          }
-          required
+          suggestions={tradingSymbols}
+          onChange={(value) => handleStrategyChange(strategyIndex, "entry_instrument", "tradingsymbol", value)}
+          value={strategy.entry_instrument.tradingsymbol}
         />
 
         <SelectInput
           label="Entry Instrument - Time Frame"
           value={strategy.entry_instrument.timeframe}
-          onChange={(e) =>
-            handleStrategyChange(
-              strategyIndex,
-              "entry_instrument",
-              "timeframe",
-              e.target.value
-            )
-          }
+          onChange={(e) => handleStrategyChange(strategyIndex, "entry_instrument", "timeframe", e.target.value)}
           options={TIME_FRAME_OPTIONS}
           required
         />
 
-        <TextInput
+        <AutoCompleteInput
           label="Exit Instrument - Trading Symbol"
-          value={strategy.exit_instrument.trading_symbol}
-          onChange={(e) =>
-            handleStrategyChange(
-              strategyIndex,
-              "exit_instrument",
-              "trading_symbol",
-              e.target.value
-            )
-          }
-          required
+          suggestions={tradingSymbols}
+          onChange={(value) => handleStrategyChange(strategyIndex, "exit_instrument", "tradingsymbol", value)}
+          value={strategy.exit_instrument.tradingsymbol}
         />
 
         <SelectInput
           label="Exit Instrument - Time Frame"
           value={strategy.exit_instrument.timeframe}
-          onChange={(e) =>
-            handleStrategyChange(
-              strategyIndex,
-              "exit_instrument",
-              "timeframe",
-              e.target.value
-            )
-          }
+          onChange={(e) => handleStrategyChange(strategyIndex, "exit_instrument", "timeframe", e.target.value)}
           options={TIME_FRAME_OPTIONS}
           required
         />
       </div>
 
       <div className="mb-4">
-        <h3 className="text-lg font-bold mb-4 text-gray-800">
-          Trade Instruments
-        </h3>
+        <h3 className="text-lg font-bold mb-4 text-gray-800">Trade Instruments</h3>
         {strategy.trade_instruments.map((instrument, instrumentIndex) => (
           <TradeInstrumentForm
             key={instrumentIndex}
@@ -154,14 +139,11 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({
             strategyIndex={strategyIndex}
             formData={formData}
             setFormData={setFormData}
+            tradingInstruments={tradingInstruments}
           />
         ))}
 
-        <button
-          type="button"
-          onClick={() => addTradeInstrument(strategyIndex)}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
+        <button type="button" onClick={() => addTradeInstrument(strategyIndex)} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
           Add Trade Instrument
         </button>
       </div>

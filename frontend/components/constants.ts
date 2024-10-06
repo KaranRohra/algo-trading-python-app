@@ -15,7 +15,21 @@ export const TRADE_TYPE_OPTIONS = [
   { value: "BOTH", label: "BOTH" },
 ];
 
+export enum Brokers {
+  ZERODHA = "Zerodha",
+  ANGELONE = "AngelOne",
+}
+
 export const BROKER_OPTIONS = [
-  { value: "AngelOne", label: "AngelOne" },
-  { value: "Zerodha", label: "Zerodha" },
+  {
+    value: Brokers.ANGELONE,
+    label: Brokers.ANGELONE,
+    instrumentListURL:
+      "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json",
+  },
+  {
+    value: Brokers.ZERODHA,
+    label: Brokers.ZERODHA,
+    instrumentListURL: "https://api.kite.trade/instruments",
+  },
 ];

@@ -11,18 +11,12 @@ interface UserFormProps {
   handleDeleteUser?: () => Promise<void>;
 }
 
-const UserForm: React.FC<UserFormProps> = ({
-  user,
-  handleFormSubmit,
-  handleDeleteUser,
-}) => {
-  const [submitStatus, setSubmitStatus] = useState<FormSubmitStatus>(
-    FormSubmitStatus.NOT_STARTED
-  );
+const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDeleteUser }) => {
+  const [submitStatus, setSubmitStatus] = useState<FormSubmitStatus>(FormSubmitStatus.NOT_STARTED);
   const [formData, setFormData] = useState<User>(
     user || {
       user_name: "",
-      active: false,
+      active: true,
       user_id: "",
       start_time: "",
       end_time: "",
@@ -32,16 +26,16 @@ const UserForm: React.FC<UserFormProps> = ({
       strategies: [
         {
           entry_instrument: {
-            trading_symbol: "",
+            tradingsymbol: "",
             timeframe: "",
           },
           exit_instrument: {
-            trading_symbol: "",
+            tradingsymbol: "",
             timeframe: "",
           },
           trade_instruments: [
             {
-              trading_symbol: "",
+              tradingsymbol: "",
               product: "",
               quantity: 0,
               active: false,
@@ -68,16 +62,16 @@ const UserForm: React.FC<UserFormProps> = ({
         ...prev.strategies,
         {
           entry_instrument: {
-            trading_symbol: "",
+            tradingsymbol: "",
             timeframe: "",
           },
           exit_instrument: {
-            trading_symbol: "",
+            tradingsymbol: "",
             timeframe: "",
           },
           trade_instruments: [
             {
-              trading_symbol: "",
+              tradingsymbol: "",
               product: "",
               quantity: 0,
               active: false,
@@ -108,11 +102,7 @@ const UserForm: React.FC<UserFormProps> = ({
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">User Form</h1>
         {handleDeleteUser && (
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
+          <button type="button" onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
             Delete User
           </button>
         )}
@@ -126,43 +116,21 @@ const UserForm: React.FC<UserFormProps> = ({
       )}
 
       {submitStatus === FormSubmitStatus.COMPLETED && (
-        <div className="fixed top-0 left-0 right-0 bg-green-500 text-white text-center p-4">
-          Form submission completed successfully!
-        </div>
+        <div className="fixed top-0 left-0 right-0 bg-green-500 text-white text-center p-4">Form submission completed successfully!</div>
       )}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <TextInput
-            label="Name"
-            onChange={(e) => handleInputChange("user_name", e.target.value)}
-            value={formData.user_name}
-            required
-          />
+          <TextInput label="Name" onChange={(e) => handleInputChange("user_name", e.target.value)} value={formData.user_name} required />
 
-          <TextInput
-            label="User ID"
-            onChange={(e) => handleInputChange("user_id", e.target.value)}
-            value={formData.user_id}
-            required
-          />
+          <TextInput label="User ID" onChange={(e) => handleInputChange("user_id", e.target.value)} value={formData.user_id} required />
 
-          <TextInput
-            label="Start Time"
-            onChange={(e) => handleInputChange("start_time", e.target.value)}
-            value={formData.start_time}
-          />
+          <TextInput label="Start Time" onChange={(e) => handleInputChange("start_time", e.target.value)} value={formData.start_time} />
 
-          <TextInput
-            label="End Time"
-            onChange={(e) => handleInputChange("end_time", e.target.value)}
-            value={formData.end_time}
-          />
+          <TextInput label="End Time" onChange={(e) => handleInputChange("end_time", e.target.value)} value={formData.end_time} />
 
           <NumberInput
             label="Risk Amount"
-            onChange={(e) =>
-              handleInputChange("risk_amount", parseFloat(e.target.value))
-            }
+            onChange={(e) => handleInputChange("risk_amount", parseFloat(e.target.value))}
             value={formData.risk_amount}
             required
           />
@@ -174,46 +142,21 @@ const UserForm: React.FC<UserFormProps> = ({
             options={BROKER_OPTIONS}
           />
 
-          <NumberInput
-            label="Priority"
-            onChange={(e) =>
-              handleInputChange("priority", parseInt(e.target.value))
-            }
-            value={formData.priority}
-            required
-          />
+          <NumberInput label="Priority" onChange={(e) => handleInputChange("priority", parseInt(e.target.value))} value={formData.priority} required />
 
-          <CheckboxInput
-            label="Active"
-            checked={formData.active}
-            onChange={(e) => handleInputChange("active", e.target.checked)}
-            required
-          />
+          <CheckboxInput label="Active" checked={formData.active} onChange={(e) => handleInputChange("active", e.target.checked)} required />
         </div>
 
         {formData.strategies.map((strategy, strategyIndex) => (
-          <StrategyForm
-            key={strategyIndex}
-            strategy={strategy}
-            strategyIndex={strategyIndex}
-            formData={formData}
-            setFormData={setFormData}
-          />
+          <StrategyForm key={strategyIndex} strategy={strategy} strategyIndex={strategyIndex} formData={formData} setFormData={setFormData} />
         ))}
 
         <div className="mb-8 flex justify-between">
-          <button
-            type="button"
-            onClick={addStrategy}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
+          <button type="button" onClick={addStrategy} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Add Strategy
           </button>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Submit
           </button>
         </div>
