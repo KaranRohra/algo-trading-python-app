@@ -35,6 +35,8 @@ export interface Strategy {
   entry_instrument: EntryExitInstrument;
   exit_instrument: EntryExitInstrument;
   trade_instruments: TradeInstrument[];
+  is_in_holding: boolean;
+  active: boolean;
 }
 
 export interface User {

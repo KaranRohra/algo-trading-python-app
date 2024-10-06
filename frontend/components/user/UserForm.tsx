@@ -1,5 +1,5 @@
 "use client";
-import { FormSubmitStatus, TRANSACTION_TYPE, User } from "@/components/user/types";
+import { FormSubmitStatus, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import { useState } from "react";
 import { BROKER_OPTIONS } from "../constants";
 import { CheckboxInput, NumberInput, SelectInput, TextInput } from "../Inputs";
@@ -10,6 +10,29 @@ interface UserFormProps {
   handleFormSubmit: (formData: User) => Promise<void>;
   handleDeleteUser?: () => Promise<void>;
 }
+
+const initialStrategy: Strategy = {
+  entry_instrument: {
+    tradingsymbol: "",
+    timeframe: "",
+  },
+  exit_instrument: {
+    tradingsymbol: "",
+    timeframe: "",
+  },
+  trade_instruments: [
+    {
+      tradingsymbol: "",
+      product: "",
+      quantity: 0,
+      active: false,
+      trade_on_signal: TRANSACTION_TYPE.BOTH,
+      transaction_type: TRANSACTION_TYPE.BOTH,
+    },
+  ],
+  is_in_holding: false,
+  active: true,
+};
 
 const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDeleteUser }) => {
   const [submitStatus, setSubmitStatus] = useState<FormSubmitStatus>(FormSubmitStatus.NOT_STARTED);
@@ -23,28 +46,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDelet
       risk_amount: 0,
       broker_name: BROKER_OPTIONS[0].value,
       priority: "",
-      strategies: [
-        {
-          entry_instrument: {
-            tradingsymbol: "",
-            timeframe: "",
-          },
-          exit_instrument: {
-            tradingsymbol: "",
-            timeframe: "",
-          },
-          trade_instruments: [
-            {
-              tradingsymbol: "",
-              product: "",
-              quantity: 0,
-              active: false,
-              trade_on_signal: TRANSACTION_TYPE.BOTH,
-              transaction_type: TRANSACTION_TYPE.BOTH,
-            },
-          ],
-        },
-      ],
+      strategies: [{ ...initialStrategy }],
     }
   );
 
@@ -58,29 +60,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDelet
   const addStrategy = () => {
     setFormData((prev) => ({
       ...prev,
-      strategies: [
-        ...prev.strategies,
-        {
-          entry_instrument: {
-            tradingsymbol: "",
-            timeframe: "",
-          },
-          exit_instrument: {
-            tradingsymbol: "",
-            timeframe: "",
-          },
-          trade_instruments: [
-            {
-              tradingsymbol: "",
-              product: "",
-              quantity: 0,
-              active: false,
-              trade_on_signal: TRANSACTION_TYPE.BOTH,
-              transaction_type: TRANSACTION_TYPE.BOTH,
-            },
-          ],
-        },
-      ],
+      strategies: [...prev.strategies, { ...initialStrategy }],
     }));
   };
 

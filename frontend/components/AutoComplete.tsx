@@ -37,7 +37,6 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ label, sug
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
       <TextInput label={label} value={inputValue} onChange={handleInputChange} required={required} />
       {showSuggestions && filteredSuggestions.length > 0 && (
         <ul className="absolute bg-white border border-gray-300 rounded mt-1 w-full max-h-40 overflow-auto shadow-lg z-10">

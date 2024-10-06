@@ -2,7 +2,7 @@ import { Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } fr
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AutoCompleteInput } from "../AutoComplete";
 import { Brokers, TIME_FRAME_OPTIONS } from "../constants";
-import { SelectInput } from "../Inputs";
+import { CheckboxInput, SelectInput } from "../Inputs";
 import { getAngelOneSymbols, getZerodhaSymbols } from "../utils";
 import { TradeInstrumentForm } from "./TradeInstrumentForm";
 
@@ -37,6 +37,15 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
     };
     setFormData((prev) => ({
       ...prev,
+      strategies: updatedStrategies,
+    }));
+  };
+
+  const handleInputChange = (strategyIndex: number, key: keyof Strategy, value: any) => {
+    const updatedStrategies = [...formData.strategies];
+    updatedStrategies[strategyIndex][key] = value;
+    setFormData((prevData) => ({
+      ...prevData,
       strategies: updatedStrategies,
     }));
   };
@@ -127,6 +136,14 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
           options={TIME_FRAME_OPTIONS}
           required
         />
+        <CheckboxInput
+          label="Already in Holding"
+          checked={strategy.is_in_holding}
+          onChange={(e) => handleInputChange(strategyIndex, "is_in_holding", e.target.checked)}
+          required
+        />
+
+        <CheckboxInput label="Active" checked={strategy.active} onChange={(e) => handleInputChange(strategyIndex, "active", e.target.checked)} required />
       </div>
 
       <div className="mb-4">
