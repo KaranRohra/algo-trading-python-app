@@ -1,7 +1,7 @@
 import { Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AutoCompleteInput } from "../AutoComplete";
-import { Brokers, TIME_FRAME_OPTIONS } from "../constants";
+import { Brokers, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS } from "../constants";
 import { CheckboxInput, SelectInput } from "../Inputs";
 import { getAngelOneSymbols, getZerodhaSymbols } from "../utils";
 import { TradeInstrumentForm } from "./TradeInstrumentForm";
@@ -42,7 +42,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
   };
 
   const handleInputChange = (strategyIndex: number, key: keyof Strategy, value: any) => {
-    const updatedStrategies = [...formData.strategies];
+    const updatedStrategies: any[] = [...formData.strategies];
     updatedStrategies[strategyIndex][key] = value;
     setFormData((prevData) => ({
       ...prevData,
@@ -56,8 +56,6 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
       tradingsymbol: "",
       product: "",
       quantity: 0,
-      active: false,
-      trade_on_signal: TRANSACTION_TYPE.BOTH,
       transaction_type: TRANSACTION_TYPE.BOTH,
     });
     setFormData((prev) => ({
@@ -100,7 +98,17 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
   return (
     <div key={strategyIndex} className="border p-6 rounded-lg mb-8 bg-gray-50">
       <div className="flex justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-800">Strategy {strategyIndex + 1}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-bold text-gray-800">Strategy {strategyIndex + 1}</h2>
+          <span>|</span>
+          <CheckboxInput
+            className="flex gap-2 items-center"
+            label="Active"
+            checked={strategy.active}
+            onChange={(e) => handleInputChange(strategyIndex, "active", e.target.checked)}
+            required
+          />
+        </div>
         <button type="button" onClick={() => deleteStrategy(strategyIndex)} className="text-red-500 text-sm">
           Delete Strategy
         </button>
@@ -136,14 +144,26 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
           options={TIME_FRAME_OPTIONS}
           required
         />
-        <CheckboxInput
-          label="Already in Holding"
-          checked={strategy.is_in_holding}
-          onChange={(e) => handleInputChange(strategyIndex, "is_in_holding", e.target.checked)}
+        <SelectInput
+          label="Holding Direction"
+          value={strategy.holding_direction}
+          onChange={(e) => handleInputChange(strategyIndex, "holding_direction", e.target.value)}
+          options={HOLDING_DIRECTION_OPTIONS}
           required
         />
-
-        <CheckboxInput label="Active" checked={strategy.active} onChange={(e) => handleInputChange(strategyIndex, "active", e.target.checked)} required />
+        <SelectInput
+          label="Trade only on Signal"
+          value={strategy.trade_on_signal.length > 1 ? TRANSACTION_TYPE.BOTH : strategy.trade_on_signal[0]}
+          onChange={(e) =>
+            handleInputChange(
+              strategyIndex,
+              "trade_on_signal",
+              e.target.value === TRANSACTION_TYPE.BOTH ? [TRANSACTION_TYPE.BUY, TRANSACTION_TYPE.SELL] : [e.target.value]
+            )
+          }
+          options={TRADE_TYPE_OPTIONS}
+          required
+        />
       </div>
 
       <div className="mb-4">

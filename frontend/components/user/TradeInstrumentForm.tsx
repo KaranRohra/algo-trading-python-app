@@ -86,13 +86,6 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
         />
 
         <SelectInput
-          label="Trade only on Signal"
-          value={instrument.trade_on_signal}
-          onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "trade_on_signal", e.target.value)}
-          options={TRADE_TYPE_OPTIONS}
-        />
-
-        <SelectInput
           label="Transaction Type"
           value={instrument.transaction_type}
           onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "transaction_type", e.target.value)}

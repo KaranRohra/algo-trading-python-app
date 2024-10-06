@@ -2,7 +2,7 @@ import json
 import time
 from datetime import datetime
 from os import environ
-from typing import List
+from typing import List, TypedDict
 
 import pyotp
 
@@ -11,6 +11,44 @@ from logs import log
 from mongodb import connection as mongo_connection
 from utils.common import time_str_to_curr_datetime
 from utils.constants import Broker, Env
+from enum import Enum
+
+
+class Instrument(TypedDict):
+    tradingsymbol: str
+    instrument_token: str
+    exchange: str
+
+
+class TradeInstrument(Instrument):
+    product: str
+    quantity: int
+    transaction_type: str
+
+
+class EntryExitInstrument(Instrument):
+    timeframe: str
+
+
+class TRANSACTION_TYPE(str, Enum):
+    BUY = "BUY"
+    SELL = "SELL"
+    BOTH = "BOTH"
+
+
+class HOLDING_DIRECTION(str, Enum):
+    LONG = "BUY"
+    SHORT = "SELL"
+    NA = "NA"
+
+
+class Strategy(TypedDict):
+    entry_instrument: EntryExitInstrument
+    exit_instrument: EntryExitInstrument
+    trade_instruments: List[TradeInstrument]
+    holding_direction: HOLDING_DIRECTION
+    active: bool
+    trade_on_signal: List[TRANSACTION_TYPE]
 
 
 class User:
@@ -23,13 +61,10 @@ class User:
         active,
         start_time,
         end_time,
-        basket,
+        strategies: List[Strategy],
         risk_amount,
         broker_name,
-        entry_time_frame,
-        exit_time_frame,
         in_process_symbols=set(),
-        holdings=[],
         api_key=None,
         priority=0,
         **kwargs,
@@ -38,16 +73,13 @@ class User:
         self.user_id: str = user_id
         self._password: str = password
         self._two_fa: str = two_fa
-        self.active: bool = active == "1"
+        self.active: bool = active
         self.start_time: datetime = time_str_to_curr_datetime(start_time)
         self.end_time: datetime = time_str_to_curr_datetime(end_time)
-        self.basket: str = basket
+        self.strategies: List[Strategy] = strategies
         self.in_process_symbols: set = in_process_symbols
         self.risk_amount: int = int(risk_amount)
         self.broker_name: str = broker_name
-        self.entry_time_frame: str = entry_time_frame
-        self.exit_time_frame: str = exit_time_frame
-        self.holdings: List[dict] = holdings
         self.api_key: str = api_key
         self.priority: int = int(priority)
 
@@ -70,11 +102,6 @@ class User:
                 log.error(e, f"{self.user_id}: {self.user_name} - Connection Failed")
                 time.sleep(5)
 
-    def set_holdings(self):
-        self.holdings = [h for h in self.broker.holdings() if h["quantity"] != 0]
-        positions = [p for p in self.broker.positions()["net"] if p["quantity"] != 0]
-        self.holdings.extend(positions)
-
     def to_dict(self):
         return {
             "user_name": self.user_name,
@@ -83,7 +110,6 @@ class User:
             "broker": self.broker_name,
             "start_time": self.start_time.isoformat(),  # Convert datetime to ISO 8601 string
             "end_time": self.end_time.isoformat(),  # Convert datetime to ISO 8601 string
-            "basket": self.basket,
         }
 
     def __str__(self) -> str:
@@ -92,7 +118,7 @@ class User:
         """
         return (
             "{"
-            + f"User ID: {self.user_id}, Status: {self.active}, Start Time: {self.start_time}, End Time: {self.end_time}, Basket: {self.basket}, Risk Amount: {self.risk_amount}"
+            + f"User ID: {self.user_id}, Status: {self.active}, Start Time: {self.start_time}, End Time: {self.end_time}, Risk Amount: {self.risk_amount}"
             + "}"
         )
 

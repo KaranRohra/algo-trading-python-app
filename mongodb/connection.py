@@ -52,4 +52,4 @@ def clean_logs():
             f"Deleted {delete_result.deleted_count} documents older than {threshold_date} or without a timestamp."
         )
     else:
-        log.info("No documents older than 30 days to delete.")
+        log.info("No documents older than 10 days to delete.")

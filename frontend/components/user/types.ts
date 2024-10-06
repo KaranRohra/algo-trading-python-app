@@ -7,6 +7,12 @@ export enum TRANSACTION_TYPE {
   BOTH = "BOTH",
 }
 
+export enum HOLDING_DIRECTION {
+  LONG = "BUY",
+  SHORT = "SELL",
+  NA = "NA",
+}
+
 export enum FormSubmitStatus {
   NOT_STARTED = "NOT_STARTED",
   IN_PROGRESS = "IN_PROGRESS",
@@ -22,8 +28,6 @@ export interface Instrument {
 export interface TradeInstrument extends Instrument {
   product: string;
   quantity: number;
-  active: boolean;
-  trade_on_signal: TRANSACTION_TYPE;
   transaction_type: TRANSACTION_TYPE;
 }
 
@@ -35,8 +39,9 @@ export interface Strategy {
   entry_instrument: EntryExitInstrument;
   exit_instrument: EntryExitInstrument;
   trade_instruments: TradeInstrument[];
-  is_in_holding: boolean;
+  holding_direction: HOLDING_DIRECTION;
   active: boolean;
+  trade_on_signal: TRANSACTION_TYPE[];
 }
 
 export interface User {

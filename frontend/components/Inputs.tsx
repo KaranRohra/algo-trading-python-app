@@ -7,12 +7,7 @@ interface TextInputProps {
   required?: boolean;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({
-  label,
-  value,
-  onChange,
-  required,
-}) => (
+export const TextInput: React.FC<TextInputProps> = ({ label, value, onChange, required }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <input
@@ -32,12 +27,7 @@ interface NumberInputProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const NumberInput: React.FC<NumberInputProps> = ({
-  label,
-  value,
-  onChange,
-  required,
-}) => (
+export const NumberInput: React.FC<NumberInputProps> = ({ label, value, onChange, required }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <input
@@ -58,13 +48,7 @@ interface SelectInputProps {
   required?: boolean;
 }
 
-export const SelectInput: React.FC<SelectInputProps> = ({
-  label,
-  value,
-  options,
-  onChange,
-  required,
-}) => (
+export const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChange, required }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <select
@@ -87,22 +71,12 @@ interface CheckboxInputProps {
   checked: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  className?: string;
 }
 
-export const CheckboxInput: React.FC<CheckboxInputProps> = ({
-  label,
-  checked,
-  onChange,
-  required,
-}) => (
-  <div>
+export const CheckboxInput: React.FC<CheckboxInputProps> = ({ label, checked, onChange, required, className }) => (
+  <div className={className}>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      className="p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      required={required}
-    />
+    <input type="checkbox" checked={checked} onChange={onChange} className="p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required={required} />
   </div>
 );

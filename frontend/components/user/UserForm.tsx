@@ -1,5 +1,5 @@
 "use client";
-import { FormSubmitStatus, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
+import { FormSubmitStatus, HOLDING_DIRECTION, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import { useState } from "react";
 import { BROKER_OPTIONS } from "../constants";
 import { CheckboxInput, NumberInput, SelectInput, TextInput } from "../Inputs";
@@ -25,13 +25,12 @@ const initialStrategy: Strategy = {
       tradingsymbol: "",
       product: "",
       quantity: 0,
-      active: false,
-      trade_on_signal: TRANSACTION_TYPE.BOTH,
       transaction_type: TRANSACTION_TYPE.BOTH,
     },
   ],
-  is_in_holding: false,
+  holding_direction: HOLDING_DIRECTION.NA,
   active: true,
+  trade_on_signal: [TRANSACTION_TYPE.BUY, TRANSACTION_TYPE.SELL],
 };
 
 const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDeleteUser }) => {
