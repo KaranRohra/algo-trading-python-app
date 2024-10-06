@@ -21,7 +21,7 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ label, sug
     if (inputValue) {
       const words = inputValue.toLowerCase().split(" ");
       const filtered = suggestions.filter((suggestion) => words.every((word) => suggestion.value.toLowerCase().includes(word)));
-      setFilteredSuggestions(filtered.slice(0, 10));
+      setFilteredSuggestions(filtered.slice(0, 30));
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);

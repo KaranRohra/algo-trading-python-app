@@ -1,30 +1,35 @@
 "use client";
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
+import { FC, useState } from "react";
 
-const Environments = () => {
-  const [envVariables, setEnvVariables] = useState<{ [key: string]: string }>({
-    NEXT_APP_API_URL: "https://api.example.com",
-    NEXT_APP_SECRET: "secret_value",
-  });
+type EnvironmentVariables = { [key: string]: any };
+
+interface IEnvironmentsProps {
+  environmentVariables: EnvironmentVariables;
+  saveEnvironmentVariable: (envVariables: EnvironmentVariables) => Promise<void>;
+  deleteEnvironmentVariable: (key: string) => Promise<void>;
+}
+
+const Environments: FC<IEnvironmentsProps> = ({ environmentVariables, saveEnvironmentVariable, deleteEnvironmentVariable }) => {
+  const [envVariables, setEnvVariables] = useState<EnvironmentVariables>(environmentVariables);
 
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
 
-  const handleAddRow = () => {
+  const handleAddRow = async () => {
     if (!newKey || !newValue) return;
 
-    setEnvVariables((prev) => ({
-      ...prev,
-      [newKey]: newValue,
-    }));
+    const newEnvVariables = { ...envVariables, [newKey]: newValue };
+    setEnvVariables(newEnvVariables);
     setNewKey("");
     setNewValue("");
+    await saveEnvironmentVariable(newEnvVariables);
   };
 
-  const handleDeleteRow = (keyToDelete: string) => {
+  const handleDeleteRow = async (keyToDelete: string) => {
     const { [keyToDelete]: _, ...newEnvVariables } = envVariables;
     setEnvVariables(newEnvVariables);
+    await deleteEnvironmentVariable(keyToDelete);
   };
 
   const handleValueChange = (key: string, newValue: string) => {
@@ -34,18 +39,15 @@ const Environments = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, you would send the data to the server or persist it
-    console.log("Saved environment variables:", envVariables);
-    alert("Environment variables saved in memory");
+    await saveEnvironmentVariable(envVariables);
+    alert("Environment variables saved successfully!");
   };
 
   return (
     <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        Environment Variables
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Environment Variables</h1>
       <form onSubmit={handleSubmit} className="mb-6">
         <div className="flex mb-4">
           <input
@@ -64,11 +66,7 @@ const Environments = () => {
             className="border border-gray-300 p-3 rounded-r w-1/2 mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <button
-            type="button"
-            onClick={handleAddRow}
-            className="bg-blue-600 text-white p-3 rounded ml-2 hover:bg-blue-700 transition duration-300"
-          >
+          <button type="button" onClick={handleAddRow} className="bg-blue-600 text-white p-3 rounded ml-2 hover:bg-blue-700 transition duration-300">
             Add
           </button>
         </div>
@@ -79,20 +77,13 @@ const Environments = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="border px-4 py-2 text-left text-gray-700">Key</th>
-              <th className="border px-4 py-2 text-left text-gray-700">
-                Value
-              </th>
-              <th className="border px-4 py-2 text-left text-gray-700">
-                Actions
-              </th>
+              <th className="border px-4 py-2 text-left text-gray-700">Value</th>
+              <th className="border px-4 py-2 text-left text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
             {Object.entries(envVariables).map(([key, value]) => (
-              <tr
-                key={key}
-                className="hover:bg-gray-100 transition duration-300"
-              >
+              <tr key={key} className="hover:bg-gray-100 transition duration-300">
                 <td className="border px-4 py-2">{key}</td>
                 <td className="border px-4 py-2">
                   <input
@@ -115,11 +106,7 @@ const Environments = () => {
         </table>
       </div>
 
-      <button
-        type="submit"
-        onClick={handleSubmit}
-        className="mt-6 bg-green-600 text-white p-3 rounded w-full hover:bg-green-700 transition duration-300"
-      >
+      <button type="submit" onClick={handleSubmit} className="mt-6 bg-green-600 text-white p-3 rounded w-full hover:bg-green-700 transition duration-300">
         Save Environment Variables
       </button>
     </div>

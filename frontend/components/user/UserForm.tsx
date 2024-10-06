@@ -73,7 +73,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDelet
 
   const handleDelete = async () => {
     const response = prompt("Please enter YES to delete the user: ");
-    if (response === "YES") if (handleDeleteUser) await handleDeleteUser();
+    if (response === "YES" && handleDeleteUser) await handleDeleteUser();
   };
 
   return (
