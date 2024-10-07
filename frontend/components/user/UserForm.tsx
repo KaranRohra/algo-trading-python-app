@@ -1,7 +1,7 @@
 "use client";
 import { FormSubmitStatus, HOLDING_DIRECTION, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import { useState } from "react";
-import { BROKER_OPTIONS } from "../constants";
+import { ANGELONE_PRODUCT_OPTIONS, BROKER_OPTIONS, TIME_FRAME_OPTIONS } from "../constants";
 import { CheckboxInput, NumberInput, SelectInput, TextInput } from "../Inputs";
 import { StrategyForm } from "./StrategyForm";
 
@@ -14,16 +14,16 @@ interface UserFormProps {
 const initialStrategy: Strategy = {
   entry_instrument: {
     tradingsymbol: "",
-    timeframe: "",
+    timeframe: TIME_FRAME_OPTIONS[0].value,
   },
   exit_instrument: {
     tradingsymbol: "",
-    timeframe: "",
+    timeframe: TIME_FRAME_OPTIONS[0].value,
   },
   trade_instruments: [
     {
       tradingsymbol: "",
-      product: "",
+      product: ANGELONE_PRODUCT_OPTIONS[0].value,
       quantity: 0,
       transaction_type: TRANSACTION_TYPE.BOTH,
     },
@@ -123,7 +123,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDelet
 
           <NumberInput label="Priority" onChange={(e) => handleInputChange("priority", parseInt(e.target.value))} value={formData.priority} required />
 
-          <CheckboxInput label="Active" checked={formData.active} onChange={(e) => handleInputChange("active", e.target.checked)} required />
+          <CheckboxInput label="Active" checked={formData.active} onChange={(e) => handleInputChange("active", e.target.checked)} />
         </div>
 
         {formData.strategies.map((strategy, strategyIndex) => (

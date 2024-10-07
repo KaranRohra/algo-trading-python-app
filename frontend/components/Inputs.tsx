@@ -70,13 +70,12 @@ interface CheckboxInputProps {
   label: string;
   checked: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  required?: boolean;
   className?: string;
 }
 
-export const CheckboxInput: React.FC<CheckboxInputProps> = ({ label, checked, onChange, required, className }) => (
+export const CheckboxInput: React.FC<CheckboxInputProps> = ({ label, checked, onChange, className }) => (
   <div className={className}>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input type="checkbox" checked={checked} onChange={onChange} className="p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required={required} />
+    <input type="checkbox" checked={checked} onChange={onChange} className="p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
   </div>
 );

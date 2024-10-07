@@ -28,7 +28,7 @@ def insert_log(log_type, message, details=None):
 
 
 def clean_logs():
-    threshold_date = dt.utcnow() - td(days=30)
+    threshold_date = dt.now() - td(days=30)
     ids_to_delete = []
 
     documents_to_delete = logs.find()

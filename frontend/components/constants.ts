@@ -40,3 +40,16 @@ export const HOLDING_DIRECTION_OPTIONS = [
   { value: HOLDING_DIRECTION.SHORT, label: HOLDING_DIRECTION.SHORT },
   { value: HOLDING_DIRECTION.NA, label: HOLDING_DIRECTION.NA },
 ];
+
+export const ANGELONE_PRODUCT_OPTIONS = [
+  { value: "DELIVERY", label: "DELIVERY" },
+  { value: "CARRYFORWARD", label: "CARRYFORWARD" },
+  { value: "MARGIN", label: "MARGIN" },
+  { value: "INTRADAY", label: "INTRADAY" },
+];
+
+export const ZERODHA_PRODUCT_OPTIONS = [
+  { value: "CNC", label: "CNC" },
+  { value: "NRML", label: "NRML" },
+  { value: "MIS", label: "MIS" },
+];

@@ -1,8 +1,8 @@
 import { Instrument, TradeInstrument, User } from "@/components/user/types";
 import React from "react";
 import { AutoCompleteInput } from "../AutoComplete";
-import { NumberInput, SelectInput, TextInput } from "../Inputs";
-import { TRADE_TYPE_OPTIONS } from "../constants";
+import { NumberInput, SelectInput } from "../Inputs";
+import { ANGELONE_PRODUCT_OPTIONS, Brokers, TRADE_TYPE_OPTIONS, ZERODHA_PRODUCT_OPTIONS } from "../constants";
 
 interface TradeInstrumentFormProps {
   instrument: TradeInstrument;
@@ -71,10 +71,11 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
           onChange={(value) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "tradingsymbol", value)}
           value={instrument.tradingsymbol}
         />
-        <TextInput
+        <SelectInput
           label="Product"
           value={instrument.product}
           onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "product", e.target.value)}
+          options={formData.broker_name === Brokers.ANGELONE ? ANGELONE_PRODUCT_OPTIONS : ZERODHA_PRODUCT_OPTIONS}
           required
         />
 

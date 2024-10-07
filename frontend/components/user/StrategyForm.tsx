@@ -1,7 +1,7 @@
 import { Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AutoCompleteInput } from "../AutoComplete";
-import { Brokers, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS } from "../constants";
+import { ANGELONE_PRODUCT_OPTIONS, Brokers, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS } from "../constants";
 import { CheckboxInput, SelectInput } from "../Inputs";
 import { getAngelOneSymbols, getZerodhaSymbols } from "../utils";
 import { TradeInstrumentForm } from "./TradeInstrumentForm";
@@ -54,7 +54,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
     const updatedStrategies = [...formData.strategies];
     updatedStrategies[strategyIndex].trade_instruments.push({
       tradingsymbol: "",
-      product: "",
+      product: ANGELONE_PRODUCT_OPTIONS[0].value,
       quantity: 0,
       transaction_type: TRANSACTION_TYPE.BOTH,
     });
@@ -106,7 +106,6 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
             label="Active"
             checked={strategy.active}
             onChange={(e) => handleInputChange(strategyIndex, "active", e.target.checked)}
-            required
           />
         </div>
         <button type="button" onClick={() => deleteStrategy(strategyIndex)} className="text-red-500 text-sm">
