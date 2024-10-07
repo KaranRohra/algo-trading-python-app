@@ -80,22 +80,8 @@ class AngelOneSmartConnect(SmartConnect):
         return {"net": position_lst}
 
     def historical_data(
-        self, instrument_token, from_date, to_date, interval, continuous=False, oi=False
+        self, instrument_details, from_date, to_date, interval, continuous=False, oi=False
     ):
-        """
-        Retrieve historical data (candles) for an instrument.
-
-        Although the actual response JSON from the API does not have field
-        names such has 'open', 'high' etc., this function call structures
-        the data into an array of objects with field names. For example:
-
-        - `instrument_token` is the instrument identifier (retrieved from the instruments()) call.
-        - `from_date` is the From date (datetime object or string in format of yyyy-mm-dd HH:MM.
-        - `to_date` is the To date (datetime object or string in format of yyyy-mm-dd HH:MM).
-        - `interval` is the candle interval (minute, day, 5 minute etc.).
-        - `continuous` is a boolean flag to get continuous data for futures and options instruments.
-        - `oi` is a boolean flag to get open interest.
-        """
         date_string_format = "%Y-%m-%d %H:%M"
         from_date_string = (
             from_date.strftime(date_string_format)
@@ -108,15 +94,10 @@ class AngelOneSmartConnect(SmartConnect):
             else to_date
         )
 
-        symbol_details = [
-            ms
-            for ms in self.master_script
-            if ms["instrument_token"] == instrument_token
-        ][0]
         data = self.getCandleData(
             {
-                "exchange": symbol_details["exchange"],
-                "symboltoken": instrument_token,
+                "exchange": instrument_details["exchange"],
+                "symboltoken": instrument_details["instrument_token"],
                 "interval": self._get_candle_interval(interval),
                 "fromdate": from_date_string,
                 "todate": to_date_string,
@@ -167,16 +148,13 @@ class AngelOneSmartConnect(SmartConnect):
         price="0",
         validity=None,
         trigger_price="0",
+        instrument_token=None,
     ):
         """Place an order."""
-        symboltoken = [
-            ms for ms in self.master_script if ms["tradingsymbol"] == tradingsymbol
-        ]
-        symboltoken = symboltoken[0]["instrument_token"] if symboltoken else None
         order_details = {
             "variety": variety,
             "tradingsymbol": tradingsymbol,
-            "symboltoken": symboltoken,
+            "symboltoken": instrument_token,
             "transactiontype": transaction_type,
             "exchange": exchange,
             "ordertype": order_type,

@@ -11,10 +11,12 @@ _db = _client[environ[Env.MONGO_DB]]
 trades = _db["trades"]
 holdings = _db["holdings"]
 logs = _db["logs"]
+users = _db["users"]
+environments = _db["environment"]
 
 
 def insert_log(log_type, message, details=None):
-    print(f"[{dt.now()}] [{log_type}] [{message}] - [{details}]")
+    print(f"[{dt.now()}] [{log_type}] [{message}]")
     logs.insert_one(
         {
             "timestamp": str(dt.now()),
@@ -26,7 +28,7 @@ def insert_log(log_type, message, details=None):
 
 
 def clean_logs():
-    threshold_date = dt.utcnow() - td(days=30)
+    threshold_date = dt.now() - td(days=30)
     ids_to_delete = []
 
     documents_to_delete = logs.find()
@@ -50,4 +52,4 @@ def clean_logs():
             f"Deleted {delete_result.deleted_count} documents older than {threshold_date} or without a timestamp."
         )
     else:
-        log.info("No documents older than 30 days to delete.")
+        log.info("No documents older than 10 days to delete.")
