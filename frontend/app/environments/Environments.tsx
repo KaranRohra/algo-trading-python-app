@@ -2,7 +2,7 @@
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { FC, useState } from "react";
 
-type EnvironmentVariables = { [key: string]: any };
+type EnvironmentVariables = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 interface IEnvironmentsProps {
   environmentVariables: EnvironmentVariables;
@@ -27,7 +27,7 @@ const Environments: FC<IEnvironmentsProps> = ({ environmentVariables, saveEnviro
   };
 
   const handleDeleteRow = async (keyToDelete: string) => {
-    const { [keyToDelete]: _, ...newEnvVariables } = envVariables;
+    const { [keyToDelete]: _, ...newEnvVariables } = envVariables; // eslint-disable-line @typescript-eslint/no-unused-vars
     setEnvVariables(newEnvVariables);
     await deleteEnvironmentVariable(keyToDelete);
   };

@@ -49,7 +49,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, handleFormSubmit, handleDelet
     }
   );
 
-  const handleInputChange = (key: keyof User, value: any) => {
+  const handleInputChange = (key: keyof User, value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     setFormData((prevData) => ({
       ...prevData,
       [key]: value,

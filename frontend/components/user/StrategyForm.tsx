@@ -1,4 +1,4 @@
-import { Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
+import { HOLDING_DIRECTION, Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AutoCompleteInput } from "../AutoComplete";
 import { ANGELONE_PRODUCT_OPTIONS, Brokers, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS } from "../constants";
@@ -17,7 +17,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
   const [tradingInstruments, setTradingInstruments] = useState<Instrument[]>([]);
   const [tradingSymbols, setTradingSymbols] = useState<InstrumentSuggestion[]>([]);
 
-  const handleStrategyChange = (strategyIndex: number, section: "entry_instrument" | "exit_instrument", field: "tradingsymbol" | "timeframe", value: any) => {
+  const handleStrategyChange = (strategyIndex: number, section: "entry_instrument" | "exit_instrument", field: "tradingsymbol" | "timeframe", value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     const updatedStrategies = [...formData.strategies];
     let modifiedValue = { ...updatedStrategies[strategyIndex][section] };
     if (field === "tradingsymbol") {
@@ -41,8 +41,8 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
     }));
   };
 
-  const handleInputChange = (strategyIndex: number, key: keyof Strategy, value: any) => {
-    const updatedStrategies: any[] = [...formData.strategies];
+  const handleInputChange = <K extends keyof Strategy>(strategyIndex: number, key: K, value: Strategy[K]) => {
+    const updatedStrategies = [...formData.strategies];
     updatedStrategies[strategyIndex][key] = value;
     setFormData((prevData) => ({
       ...prevData,
@@ -93,7 +93,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
 
   useEffect(() => {
     updateInstrumentSuggestion();
-  }, [formData.broker_name]);
+  }, [formData.broker_name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div key={strategyIndex} className="border p-6 rounded-lg mb-8 bg-gray-50">
@@ -146,7 +146,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
         <SelectInput
           label="Holding Direction"
           value={strategy.holding_direction}
-          onChange={(e) => handleInputChange(strategyIndex, "holding_direction", e.target.value)}
+          onChange={(e) => handleInputChange(strategyIndex, "holding_direction", e.target.value as HOLDING_DIRECTION)}
           options={HOLDING_DIRECTION_OPTIONS}
           required
         />
@@ -157,7 +157,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
             handleInputChange(
               strategyIndex,
               "trade_on_signal",
-              e.target.value === TRANSACTION_TYPE.BOTH ? [TRANSACTION_TYPE.BUY, TRANSACTION_TYPE.SELL] : [e.target.value]
+              e.target.value === TRANSACTION_TYPE.BOTH ? [TRANSACTION_TYPE.BUY, TRANSACTION_TYPE.SELL] : [e.target.value as TRANSACTION_TYPE]
             )
           }
           options={TRADE_TYPE_OPTIONS}

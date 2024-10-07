@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
@@ -9,7 +10,6 @@ export default function authenticate(Component: ComponentType<any>) {
 
     if (!session) {
       redirect("/login"); // Redirect to login if not authenticated
-      return null; // Return null to avoid rendering the component
     }
 
     return <Component {...props} />;
