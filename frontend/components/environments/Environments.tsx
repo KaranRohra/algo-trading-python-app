@@ -2,7 +2,7 @@
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { FC, useState } from "react";
 
-type EnvironmentVariables = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+type EnvironmentVariables = { [key: string]: string };
 
 interface IEnvironmentsProps {
   environmentVariables: EnvironmentVariables;

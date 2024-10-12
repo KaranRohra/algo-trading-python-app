@@ -1,23 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Brokers } from "../constants";
-
-export enum TRANSACTION_TYPE {
-  BUY = "BUY",
-  SELL = "SELL",
-  BOTH = "BOTH",
-}
-
-export enum HOLDING_DIRECTION {
-  LONG = "BUY",
-  SHORT = "SELL",
-  NA = "NA",
-}
-
-export enum FormSubmitStatus {
-  NOT_STARTED = "NOT_STARTED",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
-}
+import { Brokers, HOLDING_DIRECTION, TRANSACTION_TYPE } from "../constants";
 
 export interface Instrument {
   tradingsymbol: string;

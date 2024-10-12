@@ -1,8 +1,8 @@
 import { Instrument, TradeInstrument, User } from "@/components/user/types";
 import React from "react";
-import { AutoCompleteInput } from "../AutoComplete";
-import { NumberInput, SelectInput } from "../Inputs";
 import { ANGELONE_PRODUCT_OPTIONS, Brokers, TRADE_TYPE_OPTIONS, ZERODHA_PRODUCT_OPTIONS } from "../constants";
+import { AutoCompleteInput } from "../inputs/AutoComplete";
+import { NumberInput, SelectInput } from "../inputs/Inputs";
 
 interface TradeInstrumentFormProps {
   instrument: TradeInstrument;

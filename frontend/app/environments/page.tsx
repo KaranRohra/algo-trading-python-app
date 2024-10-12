@@ -1,7 +1,7 @@
 import { envCollection } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import authenticate from "../auth";
-import Environments from "./Environments";
+import Environments from "@/components/environments/Environments";
 
 const page = async () => {
   const environmentVariables = JSON.parse(JSON.stringify(await envCollection.findOne())) || {};

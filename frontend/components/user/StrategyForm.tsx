@@ -1,8 +1,8 @@
-import { HOLDING_DIRECTION, Instrument, InstrumentSuggestion, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
+import { Instrument, InstrumentSuggestion, Strategy, User } from "@/components/user/types";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { AutoCompleteInput } from "../AutoComplete";
-import { ANGELONE_PRODUCT_OPTIONS, Brokers, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS } from "../constants";
-import { CheckboxInput, SelectInput } from "../Inputs";
+import { AutoCompleteInput } from "../inputs/AutoComplete";
+import { ANGELONE_PRODUCT_OPTIONS, Brokers, HOLDING_DIRECTION, HOLDING_DIRECTION_OPTIONS, TIME_FRAME_OPTIONS, TRADE_TYPE_OPTIONS, TRANSACTION_TYPE } from "../constants";
+import { CheckboxInput, SelectInput } from "../inputs/Inputs";
 import { getAngelOneSymbols, getZerodhaSymbols } from "../utils";
 import { TradeInstrumentForm } from "./TradeInstrumentForm";
 

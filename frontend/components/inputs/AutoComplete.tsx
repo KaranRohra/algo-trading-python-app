@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { InstrumentSuggestion } from "./user/types";
+import { InstrumentSuggestion } from "../user/types";
 import { TextInput } from "./Inputs";
 
 interface AutoCompleteInputProps {

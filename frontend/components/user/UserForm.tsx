@@ -1,8 +1,8 @@
 "use client";
-import { FormSubmitStatus, HOLDING_DIRECTION, Strategy, TRANSACTION_TYPE, User } from "@/components/user/types";
+import { Strategy, User } from "@/components/user/types";
 import { useState } from "react";
-import { ANGELONE_PRODUCT_OPTIONS, BROKER_OPTIONS, TIME_FRAME_OPTIONS } from "../constants";
-import { CheckboxInput, NumberInput, SelectInput, TextInput } from "../Inputs";
+import { ANGELONE_PRODUCT_OPTIONS, BROKER_OPTIONS, FormSubmitStatus, HOLDING_DIRECTION, TIME_FRAME_OPTIONS, TRANSACTION_TYPE } from "../constants";
+import { CheckboxInput, NumberInput, SelectInput, TextInput } from "../inputs/Inputs";
 import { StrategyForm } from "./StrategyForm";
 
 interface UserFormProps {

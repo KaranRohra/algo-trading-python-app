@@ -1,4 +1,20 @@
-import { HOLDING_DIRECTION, TRANSACTION_TYPE } from "./user/types";
+export enum TRANSACTION_TYPE {
+  BUY = "BUY",
+  SELL = "SELL",
+  BOTH = "BOTH",
+}
+
+export enum HOLDING_DIRECTION {
+  LONG = "BUY",
+  SHORT = "SELL",
+  NA = "NA",
+}
+
+export enum FormSubmitStatus {
+  NOT_STARTED = "NOT_STARTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+}
 
 export const TIME_FRAME_OPTIONS = [
   { value: "minute", label: "minute" },

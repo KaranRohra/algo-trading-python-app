@@ -1,6 +1,6 @@
 import authenticate from "./auth";
 
-async function HomePage() {
+async function page() {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="text-center bg-white p-8 rounded shadow">
@@ -21,4 +21,4 @@ async function HomePage() {
   );
 }
 
-export default authenticate(HomePage);
+export default authenticate(page);
