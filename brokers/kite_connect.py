@@ -395,6 +395,7 @@ class KiteConnect(object):
         iceberg_quantity=None,
         auction_number=None,
         tag=None,
+        instrument_token=None,
     ):
         """Place an order."""
         params = locals()
@@ -699,7 +700,7 @@ class KiteConnect(object):
         return self._get("market.quote.ltp", params={"i": ins})
 
     def historical_data(
-        self, instrument_token, from_date, to_date, interval, continuous=False, oi=False
+        self, instrument_details, from_date, to_date, interval, continuous=False, oi=False
     ):
         """
         Retrieve historical data (candles) for an instrument.
@@ -729,7 +730,7 @@ class KiteConnect(object):
 
         data = self._get(
             "market.historical",
-            url_args={"instrument_token": instrument_token, "interval": interval},
+            url_args={"instrument_token": instrument_details["instrument_token"], "interval": interval},
             params={
                 "from": from_date_string,
                 "to": to_date_string,
