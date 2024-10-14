@@ -18,6 +18,7 @@ export interface EntryExitInstrument extends Instrument {
 }
 
 export interface Strategy {
+  name: string;
   entry_instrument: EntryExitInstrument;
   exit_instrument: EntryExitInstrument;
   trade_instruments: TradeInstrument[];

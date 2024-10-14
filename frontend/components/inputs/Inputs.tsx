@@ -1,21 +1,25 @@
 import React, { ChangeEvent } from "react";
 
 interface TextInputProps {
-  label: string;
+  label?: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  onBlur?: () => void;
+  autoFocus?: boolean;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({ label, value, onChange, required }) => (
+export const TextInput: React.FC<TextInputProps> = ({ label, value, onChange, required, onBlur, autoFocus }) => (
   <div>
-    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    {label && <label className="block text-sm font-medium text-gray-700">{label}</label>}
     <input
       type="text"
       value={value}
       onChange={onChange}
       className="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
       required={required}
+      autoFocus={autoFocus}
+      onBlur={onBlur}
     />
   </div>
 );

@@ -12,6 +12,7 @@ interface UserFormProps {
 }
 
 const initialStrategy: Strategy = {
+  name: "",
   entry_instrument: {
     tradingsymbol: "",
     timeframe: TIME_FRAME_OPTIONS[0].value,
