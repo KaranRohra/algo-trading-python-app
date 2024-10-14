@@ -23,8 +23,12 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleTradeInstrumentChange = (strategyIndex: number, instrumentIndex: number, field: keyof TradeInstrument, value: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  const handleTradeInstrumentChange = (
+    strategyIndex: number,
+    instrumentIndex: number,
+    field: keyof TradeInstrument,
+    value: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ) => {
     const updatedStrategies = [...formData.strategies];
     const updatedInstruments = [...updatedStrategies[strategyIndex].trade_instruments];
     if (field === "tradingsymbol") {

@@ -28,8 +28,12 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleStrategyChange = (strategyIndex: number, section: "entry_instrument" | "exit_instrument", field: "tradingsymbol" | "timeframe", value: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  const handleStrategyChange = (
+    strategyIndex: number,
+    section: "entry_instrument" | "exit_instrument",
+    field: "tradingsymbol" | "timeframe",
+    value: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ) => {
     const updatedStrategies = [...formData.strategies];
     let modifiedValue = { ...updatedStrategies[strategyIndex][section] };
     if (field === "tradingsymbol") {
