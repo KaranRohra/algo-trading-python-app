@@ -1,7 +1,12 @@
+import Environments from "@/components/environments/Environments";
 import { envCollection } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { Metadata } from "next";
 import authenticate from "../auth";
-import Environments from "@/components/environments/Environments";
+
+export const metadata: Metadata = {
+  title: "Environments",
+};
 
 const page = async () => {
   const environmentVariables = JSON.parse(JSON.stringify(await envCollection.findOne())) || {};

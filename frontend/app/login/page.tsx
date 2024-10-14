@@ -2,7 +2,11 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Login",
+};
 export default function Page() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
