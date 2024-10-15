@@ -9,8 +9,7 @@ from utils import common
 
 def search_trade(user: User, strategyIndex: int, instrument_section: str, trade_func):
     strategy = user.strategies[strategyIndex]
-    token = strategy[instrument_section]["instrument_token"]
-    user.in_process_symbols.add(token)
+    user.in_process_symbols.add(strategyIndex)
     try:
         trade_func(user, strategy)
     except Exception as e:
@@ -19,7 +18,7 @@ def search_trade(user: User, strategyIndex: int, instrument_section: str, trade_
             f"{user.user_id} - Strategy: {strategyIndex} - {instrument_section} - {str(e)}",
         )
     finally:
-        user.in_process_symbols.discard(token)
+        user.in_process_symbols.discard(strategyIndex)
 
 
 def scan_user_basket_without_handling_error(user: User):
@@ -32,10 +31,7 @@ def scan_user_basket_without_handling_error(user: User):
 
     for i in range(len(user.strategies)):
         s = user.strategies[i]
-        if (
-            s["entry_instrument"]["instrument_token"] in user.in_process_symbols
-            or not s["active"]
-        ):
+        if i in user.in_process_symbols or not s["active"]:
             continue
         entry_time_frame = common.get_int_time_frame_from_str(
             s["entry_instrument"]["timeframe"]
@@ -62,6 +58,7 @@ def scan_user_basket_without_handling_error(user: User):
 
 def scan_user_basket(user: User):
     try:
+        user.broker.holdings()
         scan_user_basket_without_handling_error(user)
     except Exception as e:
         log.error(e, f"{user.user_id} - {str(e)}")
