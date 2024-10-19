@@ -16,7 +16,7 @@ def insert_log(log_type, message, details=None):
 
 
 def clean_logs():
-    threshold_date = dt.now() - td(days=30)
+    threshold_date = dt.now() - td(days=5)
     ids_to_delete = []
 
     documents_to_delete = logs.find()
@@ -40,7 +40,7 @@ def clean_logs():
             f"Deleted {delete_result.deleted_count} documents older than {threshold_date} or without a timestamp."
         )
     else:
-        info("No documents older than 10 days to delete.")
+        info("No documents older than 5 days to delete.")
 
 
 def success(msg, details=None):
