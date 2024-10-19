@@ -1,5 +1,5 @@
 import { Instrument, TradeInstrument, User } from "@/components/user/types";
-import React from "react";
+import React, { useState } from "react";
 import { ANGELONE_PRODUCT_OPTIONS, Brokers, TRADE_TYPE_OPTIONS, ZERODHA_PRODUCT_OPTIONS } from "../constants";
 import { AutoCompleteInput } from "../inputs/AutoComplete";
 import { NumberInput, SelectInput } from "../inputs/Inputs";
@@ -21,7 +21,14 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
   setFormData,
   tradingInstruments,
 }) => {
-  const handleTradeInstrumentChange = (strategyIndex: number, instrumentIndex: number, field: keyof TradeInstrument, value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleTradeInstrumentChange = (
+    strategyIndex: number,
+    instrumentIndex: number,
+    field: keyof TradeInstrument,
+    value: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  ) => {
     const updatedStrategies = [...formData.strategies];
     const updatedInstruments = [...updatedStrategies[strategyIndex].trade_instruments];
     if (field === "tradingsymbol") {
@@ -53,46 +60,55 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
   };
 
   return (
-    <div key={instrumentIndex} className="mb-4 border p-6 rounded-lg bg-white">
-      <div className="mb-4 flex justify-between">
-        <h4 className="text-md font-bold text-gray-800">Instrument {instrumentIndex + 1}</h4>
-        <button type="button" onClick={() => deleteTradeInstrument(strategyIndex, instrumentIndex)} className="text-red-500 text-sm">
-          Delete Instrument
-        </button>
+    <div key={instrumentIndex} className="border p-6 rounded-lg bg-white mb-4">
+      <div className="flex justify-between items-center">
+        <h4 className="text-md font-bold text-gray-800 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+          {instrument.tradingsymbol || `Instrument ${instrumentIndex + 1}`}
+        </h4>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500 text-sm">
+            {isExpanded ? "Collapse" : "Expand"}
+          </button>
+          <button type="button" onClick={() => deleteTradeInstrument(strategyIndex, instrumentIndex)} className="text-red-500 text-sm">
+            Delete Instrument
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <AutoCompleteInput
-          label="Trading Symbol"
-          suggestions={tradingInstruments.map((item, i) => ({
-            index: i,
-            value: `${item.tradingsymbol} - ${item.exchange}`,
-          }))}
-          onChange={(value) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "tradingsymbol", value)}
-          value={instrument.tradingsymbol}
-        />
-        <SelectInput
-          label="Product"
-          value={instrument.product}
-          onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "product", e.target.value)}
-          options={formData.broker_name === Brokers.ANGELONE ? ANGELONE_PRODUCT_OPTIONS : ZERODHA_PRODUCT_OPTIONS}
-          required
-        />
+      {isExpanded && (
+        <div className="grid grid-cols-2 gap-6 mb-4 mt-4">
+          <AutoCompleteInput
+            label="Trading Symbol"
+            suggestions={tradingInstruments.map((item, i) => ({
+              index: i,
+              value: `${item.tradingsymbol} - ${item.exchange}`,
+            }))}
+            onChange={(value) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "tradingsymbol", value)}
+            value={instrument.tradingsymbol}
+          />
+          <SelectInput
+            label="Product"
+            value={instrument.product}
+            onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "product", e.target.value)}
+            options={formData.broker_name === Brokers.ANGELONE ? ANGELONE_PRODUCT_OPTIONS : ZERODHA_PRODUCT_OPTIONS}
+            required
+          />
 
-        <NumberInput
-          label="Quantity"
-          value={instrument.quantity}
-          onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "quantity", parseInt(e.target.value))}
-          required
-        />
+          <NumberInput
+            label="Quantity"
+            value={instrument.quantity}
+            onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "quantity", parseInt(e.target.value))}
+            required
+          />
 
-        <SelectInput
-          label="Transaction Type"
-          value={instrument.transaction_type}
-          onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "transaction_type", e.target.value)}
-          options={TRADE_TYPE_OPTIONS}
-        />
-      </div>
+          <SelectInput
+            label="Transaction Type"
+            value={instrument.transaction_type}
+            onChange={(e) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "transaction_type", e.target.value)}
+            options={TRADE_TYPE_OPTIONS}
+          />
+        </div>
+      )}
     </div>
   );
 };

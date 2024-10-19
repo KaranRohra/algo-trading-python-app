@@ -1,12 +1,20 @@
 import authenticate from "@/app/auth";
-import { usersCollection } from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
-import { redirect } from "next/navigation";
 import UserForm from "@/components/user/UserForm";
 import { User } from "@/components/user/types";
+import { usersCollection } from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+export const generateMetadata = async ({ params }: { params: { user_id: string } }): Promise<Metadata> => {
+  const user = (await usersCollection.findOne({ _id: new ObjectId(params.user_id) })) as User;
+  return {
+    title: `${user.user_name} | User`,
+  };
+};
 
 const page = async ({ params }: { params: { user_id: string } }) => {
-  const getUserbyId = async () => {
+  const getUserById = async () => {
     "use server";
     try {
       const _id = params.user_id;
@@ -33,7 +41,7 @@ const page = async ({ params }: { params: { user_id: string } }) => {
     redirect("/users");
   };
 
-  const user = await getUserbyId();
+  const user = await getUserById();
 
   return <UserForm user={user} handleDeleteUser={handleDeleteUser} handleFormSubmit={handleFormSubmit} />;
 };

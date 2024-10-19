@@ -67,6 +67,7 @@ class User:
         in_process_symbols=set(),
         api_key=None,
         priority=0,
+        holdings=[],
         **kwargs,
     ):
         self.user_name: str = user_name
@@ -82,6 +83,7 @@ class User:
         self.broker_name: str = broker_name
         self.api_key: str = api_key
         self.priority: int = int(priority)
+        self.holdings: List = holdings
 
     def set_broker_obj(self):
         retry = 0
@@ -98,9 +100,15 @@ class User:
                 log.success(f"{self.user_id}: Connection with Broker Established")
                 break
             except Exception as e:
+                self.broker = None
                 retry += 1
                 log.error(e, f"{self.user_id}: {self.user_name} - Connection Failed")
                 time.sleep(5)
+
+    def set_holdings(self):
+        self.holdings = [h for h in self.broker.holdings() if h["quantity"] != 0]
+        positions = [p for p in self.broker.positions()["net"] if p["quantity"] != 0]
+        self.holdings.extend(positions)
 
     def to_dict(self):
         return {
