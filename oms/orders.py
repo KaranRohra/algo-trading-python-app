@@ -76,7 +76,9 @@ def place_entry_order(
 
 def entry_order(user: User, strategy: Strategy):
     entry_instrument = strategy["entry_instrument"]
-    signal_details = entry_instrument["signal_details"]
+    signal_details = const.CACHE_ENTRY_SIGNAL_DETAIL[
+        entry_instrument["instrument_token"]
+    ]
     ohlc = signal_details["ohlc"]
     result = signal_details["signal"]
     log.info(
@@ -99,7 +101,9 @@ def entry_order(user: User, strategy: Strategy):
 def exit_order(user: User, strategy: Strategy):
     broker = user.broker
     exit_instrument = strategy["exit_instrument"]
-    result = exit_instrument["signal_details"]["signal"]
+    result = const.CACHE_EXIT_SIGNAL_DETAIL[exit_instrument["instrument_token"]][
+        "signal"
+    ]
     log.info(
         f"Exit Signal: {user.user_id} - {exit_instrument['tradingsymbol']}",
         result,

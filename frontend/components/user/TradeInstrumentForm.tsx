@@ -84,7 +84,7 @@ export const TradeInstrumentForm: React.FC<TradeInstrumentFormProps> = ({
               value: `${item.tradingsymbol} - ${item.exchange}`,
             }))}
             onChange={(value) => handleTradeInstrumentChange(strategyIndex, instrumentIndex, "tradingsymbol", value)}
-            value={instrument.tradingsymbol}
+            value={`${instrument.tradingsymbol} - ${instrument.exchange}`}
           />
           <SelectInput
             label="Product"

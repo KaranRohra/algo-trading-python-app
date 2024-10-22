@@ -1,10 +1,10 @@
 from datetime import datetime as dt, timedelta as td
 from threading import Thread
 
-from mongodb.users import User, Strategy
+from mongodb.users import User, Strategy, HOLDING_DIRECTION
 from logs import log
 from oms import orders
-from utils import common
+from utils import common, constants as const
 from typing import List
 from strategies import entry, exit
 
@@ -30,7 +30,7 @@ def in_holding(user: User, strategy: Strategy):
         for h in user.holdings:
             if (
                 h["instrument_token"] == ti["instrument_token"]
-                and h["quantity"] >= ti["quantity"]
+                and abs(h["quantity"]) >= ti["quantity"]
             ):
                 instrument_in_holding = True
                 break
@@ -70,11 +70,11 @@ def set_historical_data(user: User, strategies: List[Strategy]):
         entry_signal = cache_entry_signal[entry_instrument["instrument_token"]]
         exit_signal = cache_exit_signal[exit_instrument["instrument_token"]]
         ohlc = cache_ohlc[entry_instrument["instrument_token"]]
-        entry_instrument["signal_details"] = {
+        const.CACHE_ENTRY_SIGNAL_DETAIL[entry_instrument["instrument_token"]] = {
             "ohlc": ohlc,
             "signal": entry_signal,
         }
-        exit_instrument["signal_details"] = {
+        const.CACHE_EXIT_SIGNAL_DETAIL[exit_instrument["instrument_token"]] = {
             "ohlc": ohlc,
             "signal": exit_signal,
         }
@@ -100,7 +100,7 @@ def scan_user_basket_without_handling_error(user: User):
             s["exit_instrument"]["timeframe"]
         )
         trade_func, instrument_section = None, ""
-        if not in_holding(user, s):
+        if not in_holding(user, s) or s["holding_direction"] == HOLDING_DIRECTION.NA:
             if now.minute % entry_time_frame == 0:
                 trade_func = orders.entry_order
                 instrument_section = "entry_instrument"
