@@ -91,7 +91,7 @@ def entry_order(user: User, strategy: Strategy):
     place_entry_order(user, strategy, ohlc, result["signal"])
     strategy["holding_direction"] = const.CACHE_EXIT_SIGNAL_DETAIL[
         strategy["exit_instrument"]["instrument_token"]
-    ]["signal"]
+    ]["signal"]["signal"]
     user_collection.update_one(
         {"user_id": user.user_id, "strategies.name": strategy["name"]},
         {"$set": {"strategies.$": strategy}},
