@@ -29,7 +29,7 @@ def place_entry_order(
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
             entry_price = curr_ohlc[-1]["close"]
             break
-        time.sleep(1)
+        time.sleep(0.4)
 
     if not entry_price:
         log.warn(
@@ -89,8 +89,8 @@ def entry_order(user: User, strategy: Strategy):
         return
 
     place_entry_order(user, strategy, ohlc, result["signal"])
-    strategy["holding_direction"] = strategy["exit_instrument"]["signal_details"][
-        "signal"
+    strategy["holding_direction"] = const.CACHE_EXIT_SIGNAL_DETAIL[
+        strategy["exit_instrument"]["instrument_token"]
     ]["signal"]
     user_collection.update_one(
         {"user_id": user.user_id, "strategies.name": strategy["name"]},
