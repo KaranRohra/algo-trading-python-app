@@ -37,7 +37,9 @@ def place_entry_order(
             {"status": "Candle High/Low not break", **user.to_dict()},
         )
         return
-    for trade_instrument in strategy["trade_instruments"]:
+    # Sorted on transaction_type to buy first
+    trade_instruments = sorted(strategy["trade_instruments"], key=lambda x: x["transaction_type"])
+    for trade_instrument in trade_instruments:
         now = dt.now()
         ohlc = user.broker.historical_data(
             trade_instrument,
@@ -121,7 +123,9 @@ def exit_order(user: User, strategy: Strategy):
     ):
         return
 
-    for trade_instrument in strategy["trade_instruments"]:
+    # Sorted on transaction_type in reverse order to buy first
+    trade_instruments = sorted(strategy["trade_instruments"], key=lambda x: x["transaction_type"], reverse=True)
+    for trade_instrument in trade_instruments:
         if environ.get(const.Env.MOCK_TRADING):
             continue
         broker.place_order(
