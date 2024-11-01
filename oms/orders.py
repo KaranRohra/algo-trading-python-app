@@ -29,7 +29,7 @@ def place_entry_order(
         if transaction_type == const.SELL and curr_ohlc[-1]["low"] < ohlc[-1]["low"]:
             entry_price = curr_ohlc[-1]["close"]
             break
-        time.sleep(1)
+        time.sleep(0.4)
 
     if not entry_price:
         log.warn(
@@ -37,7 +37,9 @@ def place_entry_order(
             {"status": "Candle High/Low not break", **user.to_dict()},
         )
         return
-    for trade_instrument in strategy["trade_instruments"]:
+    # Sorted on transaction_type to buy first
+    trade_instruments = sorted(strategy["trade_instruments"], key=lambda x: x["transaction_type"])
+    for trade_instrument in trade_instruments:
         now = dt.now()
         ohlc = user.broker.historical_data(
             trade_instrument,
@@ -76,7 +78,9 @@ def place_entry_order(
 
 def entry_order(user: User, strategy: Strategy):
     entry_instrument = strategy["entry_instrument"]
-    signal_details = entry_instrument["signal_details"]
+    signal_details = const.CACHE_ENTRY_SIGNAL_DETAIL[
+        entry_instrument["instrument_token"]
+    ]
     ohlc = signal_details["ohlc"]
     result = signal_details["signal"]
     log.info(
@@ -87,9 +91,9 @@ def entry_order(user: User, strategy: Strategy):
         return
 
     place_entry_order(user, strategy, ohlc, result["signal"])
-    strategy["holding_direction"] = strategy["exit_instrument"]["signal_details"][
-        "signal"
-    ]["signal"]
+    strategy["holding_direction"] = const.CACHE_EXIT_SIGNAL_DETAIL[
+        strategy["exit_instrument"]["instrument_token"]
+    ]["signal"]["signal"]
     user_collection.update_one(
         {"user_id": user.user_id, "strategies.name": strategy["name"]},
         {"$set": {"strategies.$": strategy}},
@@ -99,7 +103,9 @@ def entry_order(user: User, strategy: Strategy):
 def exit_order(user: User, strategy: Strategy):
     broker = user.broker
     exit_instrument = strategy["exit_instrument"]
-    result = exit_instrument["signal_details"]["signal"]
+    result = const.CACHE_EXIT_SIGNAL_DETAIL[exit_instrument["instrument_token"]][
+        "signal"
+    ]
     log.info(
         f"Exit Signal: {user.user_id} - {exit_instrument['tradingsymbol']}",
         result,
@@ -117,7 +123,9 @@ def exit_order(user: User, strategy: Strategy):
     ):
         return
 
-    for trade_instrument in strategy["trade_instruments"]:
+    # Sorted on transaction_type in reverse order to buy first
+    trade_instruments = sorted(strategy["trade_instruments"], key=lambda x: x["transaction_type"], reverse=True)
+    for trade_instrument in trade_instruments:
         if environ.get(const.Env.MOCK_TRADING):
             continue
         broker.place_order(

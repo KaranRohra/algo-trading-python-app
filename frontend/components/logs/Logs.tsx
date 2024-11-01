@@ -40,7 +40,6 @@ const Logs: React.FC<LogsProps> = ({ logs }) => {
       (log.message && log.message.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-
   const indexOfLastLog = currentPage * logsPerPage;
   const indexOfFirstLog = indexOfLastLog - logsPerPage;
   const currentLogs = filteredLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(indexOfFirstLog, indexOfLastLog);
@@ -82,9 +81,13 @@ const Logs: React.FC<LogsProps> = ({ logs }) => {
                 </td>
                 <td className="py-3 px-4">{log.message.length > 100 ? `${log.message.substring(0, 100)}...` : log.message}</td>
                 <td className="py-3 px-4">
-                  <button className="text-blue-500 hover:underline" onClick={() => showModal(log.details)}>
-                    View Details
-                  </button>
+                  {log.details ? (
+                    <button className="text-blue-500 hover:underline" onClick={() => showModal(log.details)}>
+                      View Details
+                    </button>
+                  ) : (
+                    "No details available"
+                  )}
                 </td>
               </tr>
             ))}

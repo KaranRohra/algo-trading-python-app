@@ -153,7 +153,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
               label="Entry Instrument - Trading Symbol"
               suggestions={tradingSymbols}
               onChange={(value) => handleStrategyChange(strategyIndex, "entry_instrument", "tradingsymbol", value)}
-              value={strategy.entry_instrument.tradingsymbol}
+              value={`${strategy.entry_instrument.tradingsymbol} - ${strategy.entry_instrument.exchange}`}
             />
 
             <SelectInput
@@ -168,7 +168,7 @@ export const StrategyForm: React.FC<StrategyFormProps> = ({ strategyIndex, strat
               label="Exit Instrument - Trading Symbol"
               suggestions={tradingSymbols}
               onChange={(value) => handleStrategyChange(strategyIndex, "exit_instrument", "tradingsymbol", value)}
-              value={strategy.exit_instrument.tradingsymbol}
+              value={`${strategy.exit_instrument.tradingsymbol} - ${strategy.exit_instrument.exchange}`}
             />
 
             <SelectInput

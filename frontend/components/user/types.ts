@@ -8,6 +8,7 @@ export interface Instrument {
 }
 
 export interface TradeInstrument extends Instrument {
+  exchange?: string;
   product: string;
   quantity: number;
   transaction_type: TRANSACTION_TYPE;
