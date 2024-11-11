@@ -61,10 +61,10 @@ def set_historical_data(user: User, strategies: List[Strategy]):
                 )
                 cache_ohlc[i["instrument_token"]] = ohlc
                 cache_entry_signal[i["instrument_token"]] = entry.ema_adx_rsi_entry_v2(
-                    cache_ohlc[entry_instrument["instrument_token"]]
+                    cache_ohlc[i["instrument_token"]]
                 )
                 cache_exit_signal[i["instrument_token"]] = exit.ema_exit_v2(
-                    cache_ohlc[exit_instrument["instrument_token"]]
+                    cache_ohlc[i["instrument_token"]]
                 )
 
         entry_signal = cache_entry_signal[entry_instrument["instrument_token"]]
