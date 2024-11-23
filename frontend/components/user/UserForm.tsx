@@ -15,15 +15,18 @@ const initialStrategy: Strategy = {
   name: "",
   entry_instrument: {
     tradingsymbol: "",
+    exchange: "",
     timeframe: TIME_FRAME_OPTIONS[0].value,
   },
   exit_instrument: {
     tradingsymbol: "",
+    exchange: "",
     timeframe: TIME_FRAME_OPTIONS[0].value,
   },
   trade_instruments: [
     {
       tradingsymbol: "",
+      exchange: "",
       product: ANGELONE_PRODUCT_OPTIONS[0].value,
       quantity: 0,
       transaction_type: TRANSACTION_TYPE.BOTH,

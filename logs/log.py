@@ -16,31 +16,26 @@ def insert_log(log_type, message, details=None):
 
 
 def clean_logs():
-    threshold_date = dt.now() - td(days=5)
+    logs_count = logs.count_documents({})
+    if logs_count <= 100:
+        info("No logs to delete, total logs count is within the limit.")
+        return
+
+    logs_to_delete_count = logs_count - 100
     ids_to_delete = []
 
-    documents_to_delete = logs.find()
+    documents_to_delete = logs.find().sort("timestamp", 1).limit(logs_to_delete_count)
 
     for doc in documents_to_delete:
-        try:
-            if "timestamp" in doc and doc["timestamp"]:
-                timestamp_str = doc["timestamp"].split(".")[0]
-                doc_timestamp = dt.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-
-                if doc_timestamp < threshold_date:
-                    ids_to_delete.append(doc["_id"])
-            else:
-                ids_to_delete.append(doc["_id"])
-        except ValueError:
-            print(f"Invalid timestamp format in document with _id: {doc['_id']}")
+        ids_to_delete.append(doc["_id"])
 
     if ids_to_delete:
         delete_result = logs.delete_many({"_id": {"$in": ids_to_delete}})
         info(
-            f"Deleted {delete_result.deleted_count} documents older than {threshold_date} or without a timestamp."
+            f"Deleted {delete_result.deleted_count} documents to keep the latest 100 logs."
         )
     else:
-        info("No documents older than 5 days to delete.")
+        info("No documents to delete.")
 
 
 def success(msg, details=None):
